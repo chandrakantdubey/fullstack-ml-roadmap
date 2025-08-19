@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 8 Guide: Customer Support Chatbot with Knowledge Base</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 700;
+        }
+        pre {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+        }
+        code {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.25rem;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+        }
+        .step-number {
+            background-color: #f59e0b; /* amber-500 */
+            color: white;
+            border-radius: 9999px;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .pro-tip {
+            background-color: #fffbeb; /* amber-50 */
+            border-left: 4px solid #f59e0b; /* amber-500 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 8: Customer Support Chatbot (RAG)</h1>
+            <p class="text-lg text-slate-600">A guide to building a full-stack "Chat with your data" application.</p>
+        </header>
+
+        <main class="space-y-16">
+            <!-- Section 1: Architecture & RAG Pipeline -->
+            <section>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Architecture & The RAG Pipeline</h2>
+                <div class="space-y-4 text-slate-700 mb-8">
+                    <p><strong>Project Goal:</strong> To build a full-stack chatbot that answers user questions based on a private knowledge base. This project moves beyond simple LLM wrappers by implementing the <strong>Retrieval-Augmented Generation (RAG)</strong> pattern. This ensures the chatbot's answers are grounded in specific source documents, reducing hallucinations and providing accurate, context-aware responses.</p>
+                    <p><strong>Core Technologies & Packages:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Frontend:</strong> Next.js</li>
+                        <li><strong>Backend:</strong> NestJS</li>
+                        <li><strong>AI Orchestration:</strong> LangChain (or LlamaIndex)</li>
+                        <li><strong>AI Service:</strong> OpenAI API (for both embeddings and generation)</li>
+                        <li><strong>Vector Database:</strong> A choice of Pinecone (managed), or a self-hosted option like ChromaDB or Qdrant.</li>
+                    </ul>
+                </div>
+
+                <h3 class="text-2xl font-bold mb-4">The Two-Phase RAG Architecture</h3>
+                <p class="mb-4 text-slate-700">The system operates in two distinct phases: an offline "Ingestion" phase to build the knowledge base, and an online "Inference" phase to answer user queries.</p>
+                <pre><code class="language-text">
+PHASE 1: INGESTION (Building the Knowledge Base)
++-----------+  +----------------+  +-----------------+  +-----------------+  +-----------------+
+| Source    |--&gt;| Document       |--&gt;| Text Splitter   |--&gt;| Embedding Model |--&gt;| Vector Database |
+| Documents |  | Loader         |  | (Chunking)      |  | (e.g., OpenAI)  |  | (Stores Vectors |
+| (PDF/TXT) |  | (Reads files)  |  |                 |  |                 |  | & Text Chunks)  |
++-----------+  +----------------+  +-----------------+  +-----------------+  +-----------------+
+
+PHASE 2: INFERENCE (Answering a User Query)
++-----------+  +-----------------+  +-----------------+
+| User      |--&gt;| Embedding Model |--&gt;| Vector Database | --(Finds similar chunks)--> [ Relevant Chunks ]
+| Query     |  | (Creates vector |  | (Similarity     |                                      |
+| (String)  |  |  for the query) |  |  Search)        |                                      v
++-----------+  +-----------------+  +-----------------+                               +-----------------+
+                                                                                      | Prompt Template | --&gt; [ Final Prompt ]
+                                                                                      +-----------------+          |
+                                                                                                                   v
+                                                                                                           +-----------------+
+                                                                                                           | LLM             |
+                                                                                                           | (e.g., GPT-4)   |
+                                                                                                           +-----------------+
+                                                                                                                   |
+                                                                                                                   v
+                                                                                                              [ Final Answer ]
+                </code></pre>
+            </section>
+
+            <!-- Section 2: Implementation Strategy -->
+            <section>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Implementation Strategy</h2>
+                <div class="space-y-8">
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">1</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Backend: The Ingestion Pipeline (NestJS)</h3>
+                            <p class="text-slate-700">This is the process of preparing your knowledge base. You'll build a secure endpoint in your NestJS backend (e.g., `POST /ingest-documents`) that only an administrator can access.</p>
+                            <p class="text-slate-700 mt-2">This endpoint's logic, orchestrated by a library like <strong>LangChain</strong>, will:</p>
+                            <ol class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li><strong>Load Documents:</strong> Use a `DirectoryLoader` to read all files from a specified directory.</li>
+                                <li><strong>Split Text:</strong> Use a `RecursiveCharacterTextSplitter` to break the documents into small, semantically meaningful chunks (e.g., 1000 characters with 200 characters of overlap). This is the most critical step for retrieval quality.</li>
+                                <li><strong>Generate Embeddings:</strong> Use `OpenAIEmbeddings` to convert each text chunk into a high-dimensional vector.</li>
+                                <li><strong>Store in Vector DB:</strong> Initialize a connection to your chosen vector database (e.g., `Pinecone`) and use it to store the text chunks and their corresponding vector embeddings.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">2</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Backend: The Chat Inference Chain (NestJS)</h3>
+                            <p class="text-slate-700">This is the core logic that answers user questions. You will create a main chat endpoint (e.g., `POST /chat`). This endpoint will construct and execute a "chain" using LangChain.</p>
+                            <div class="pro-tip mt-4">
+                                <p><strong>The RAG Chain:</strong> LangChain provides abstractions to build this easily. The chain will be constructed to perform the following steps when it receives a user query:</p>
+                                <ol class="list-decimal list-inside ml-2">
+                                    <li>The user's `question` is received.</li>
+                                    <li>The vector store is used as a `Retriever` to fetch the most relevant document chunks based on the question.</li>
+                                    <li>A `PromptTemplate` is used to format the retrieved chunks and the original question into a single, comprehensive prompt. The prompt will explicitly instruct the LLM to answer the question *only* using the provided context.</li>
+                                    <li>The formatted prompt is passed to the LLM (e.g., `ChatOpenAI`).</li>
+                                    <li>The LLM's generated `answer` is returned to the user.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">3</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Frontend: Building the Chat Interface (Next.js)</h3>
+                            <p class="text-slate-700">The frontend will provide a clean, intuitive chat experience. You will build:</p>
+                            <ul class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li>A `MessageList` component to render the conversation history.</li>
+                                <li>A `MessageInput` component with a text area and a submit button.</li>
+                                <li>State management (`useState`) to hold the array of messages (`[{ role: 'user', content: '...' }, { role: 'assistant', content: '...' }]`).</li>
+                                <li>A handler function that, on form submission, adds the user's message to the state and makes a `fetch` call to your NestJS `/chat` endpoint.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">4</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Advanced: Implementing Streaming Responses</h3>
+                            <p class="text-slate-700">Waiting for the full response from the LLM can feel slow. The best practice is to stream the response. This is a complex but highly rewarding feature.</p>
+                             <ol class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li><strong>Backend (NestJS):</strong> Modify your RAG chain to use the LLM's streaming capabilities. Your `/chat` endpoint will now return a `StreamingTextResponse` instead of waiting for the full answer. It will send the response back to the client token by token as it's generated.</li>
+                                <li><strong>Frontend (Next.js):</strong> Use a library like the Vercel AI SDK's `useChat` hook. This hook simplifies the process of handling streaming responses on the client. It will automatically update your message state as new tokens arrive, creating the smooth, real-time "typing" effect seen in modern AI chatbots.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

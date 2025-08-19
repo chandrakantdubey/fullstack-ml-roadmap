@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 9 Guide: E-commerce Backend (Microservices)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 700;
+        }
+        pre {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+        }
+        code {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.25rem;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+        }
+        .step-number {
+            background-color: #f59e0b; /* amber-500 */
+            color: white;
+            border-radius: 9999px;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .pro-tip {
+            background-color: #fffbeb; /* amber-50 */
+            border-left: 4px solid #f59e0b; /* amber-500 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 9: Introduction to Microservices</h1>
+            <p class="text-lg text-slate-600">A guide to decomposing a monolith into an e-commerce backend with independent services.</p>
+        </header>
+
+        <main class="space-y-16">
+            <!-- Section 1: Architecture & Core Concepts -->
+            <section>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Microservices Architecture & Principles</h2>
+                <div class="space-y-4 text-slate-700 mb-8">
+                    <p><strong>Project Goal:</strong> To gain hands-on experience with a microservices architecture by decomposing a conceptual e-commerce monolith. You will build three separate, independently deployable services, each with its own dedicated database, and manage them within a unified development environment using Docker Compose.</p>
+                    <p><strong>Core Technologies & Packages:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Framework:</strong> NestJS (for all three services)</li>
+                        <li><strong>Database:</strong> PostgreSQL (a separate instance for each service)</li>
+                        <li><strong>Orchestration:</strong> Docker Compose</li>
+                        <li><strong>Communication:</strong> NestJS `HttpModule` (Axios) for synchronous calls</li>
+                    </ul>
+                </div>
+
+                <h3 class="text-2xl font-bold mb-4">System Architecture Diagram</h3>
+                <p class="mb-4 text-slate-700">This diagram shows the high-level architecture of our three independent services and their dedicated databases.</p>
+                <pre><code class="language-text">
++-----------------------------------------------------------------+
+| Docker Compose Environment                                      |
+|                                                                 |
+|  +------------------+      +------------------+      +------------------+
+|  |                  |      |                  |      |                  |
+|  | User Service     |      | Product Service  |      | Order Service    |
+|  | (NestJS App)     |      | (NestJS App)     |      | (NestJS App)     |
+|  |                  |      |                  |      |                  |
+|  +--------+---------+      +--------+---------+      +--------+---------+
+|           | (1)                     | (2)                     | (3)
+|           |                         |                         |
+|           v                         v                         v
+|  +--------+---------+      +--------+---------+      +--------+---------+
+|  |                  |      |                  |      |                  |
+|  | User Database    |      | Product Database |      | Order Database   |
+|  | (PostgreSQL)     |      | (PostgreSQL)     |      | (PostgreSQL)     |
+|  |                  |      |                  |      |                  |
+|  +------------------+      +------------------+      +------------------+
+|                                                                 |
+|         Synchronous HTTP Calls (The Challenge)                  |
+|         ...................................................     |
+|         :                                                 :     |
+|         :  &lt;-------------------(4)----------------------- :     |
+|         :  &lt;-------------------(5)--------------------------------+
+|         :..................................................:      |
+|                                                                 |
++-----------------------------------------------------------------+
+
+(1, 2, 3) Each service communicates ONLY with its own database.
+(4) To create an order, the Order Service makes a direct HTTP call to the User Service to validate the user.
+(5) The Order Service also calls the Product Service to fetch product details and verify stock.
+                </code></pre>
+            </section>
+
+            <!-- Section 2: Implementation Strategy -->
+            <section>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Implementation Strategy</h2>
+                <div class="space-y-8">
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">1</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Project Structure: The Monorepo Approach</h3>
+                            <p class="text-slate-700">To manage the three services, you will set up a monorepo. This is a single repository that contains multiple distinct projects. The NestJS CLI has built-in support for this structure.</p>
+                            <p class="text-slate-700 mt-2">You will initialize a new NestJS workspace and then use the CLI to generate three separate "applications" within it: `users`, `products`, and `orders`. This keeps all related code in one place while maintaining logical separation.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">2</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Building the Bounded Contexts: User & Product Services</h3>
+                            <p class="text-slate-700">The first two services are straightforward as they have no external dependencies. They represent distinct "bounded contexts" in our e-commerce domain.</p>
+                            <ul class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li><strong>User Service:</strong> Implement the full CRUD functionality for users. It will have its own `User` entity, a service layer, and a controller with endpoints like `GET /users/:id`.</li>
+                                <li><strong>Product Service:</strong> Implement the logic for managing the product catalog. It will have a `Product` entity (with fields like `name`, `price`, `stockQuantity`), a service, and a controller with endpoints like `GET /products` and `PATCH /products/:id/stock`.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">3</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">The Challenge: Implementing the Order Service</h3>
+                            <p class="text-slate-700">This service exposes the core problem of this week's project. To create an order, the `OrderService` needs data that it doesn't own: it needs to know if the `userId` is valid and if the requested `productId`s are in stock. The initial implementation will solve this with direct, synchronous communication.</p>
+                            <div class="pro-tip mt-4">
+                                <p><strong>The Synchronous Communication Flow:</strong></p>
+                                <ol class="list-decimal list-inside ml-2">
+                                    <li>A `POST /orders` request arrives at the Order Service.</li>
+                                    <li>The Order Service's controller calls its service layer.</li>
+                                    <li>The service makes an HTTP `GET` request to `http://user-service:3001/users/:id` to validate the user.</li>
+                                    <li>It then makes another HTTP `GET` request to `http://product-service:3002/products/:id` to get product details.</li>
+                                    <li>If both calls succeed, it creates the order in its own database.</li>
+                                    <li>This creates a **temporal coupling**: all three services must be running and healthy for an order to be placed.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">4</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Orchestrating the Environment with Docker Compose</h3>
+                            <p class="text-slate-700">A `docker-compose.yml` file will be created at the root of the monorepo. This file is the blueprint for your entire local development environment. It will define:</p>
+                             <ul class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li><strong>Three NestJS Services:</strong> `users-service`, `products-service`, `orders-service`. Each will be built from its respective `Dockerfile`.</li>
+                                <li><strong>Three Database Services:</strong> `users-db`, `products-db`, `orders-db`. Each will be based on the official `postgres` image.</li>
+                                <li><strong>Networking:</strong> Docker Compose automatically creates a network, allowing services to communicate with each other using their service names as hostnames (e.g., `http://products-service:3002`).</li>
+                                <li><strong>Volumes:</strong> Named volumes will be used to persist the data for each PostgreSQL database, so data isn't lost when the containers are stopped and restarted.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

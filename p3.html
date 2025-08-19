@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 3 Guide: Sentiment Analysis API for Customer Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+      }
+      pre {
+        font-family: "Source Code Pro", monospace;
+        background-color: #1e293b; /* slate-800 */
+        color: #e2e8f0; /* slate-200 */
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+      }
+      code {
+        font-family: "Source Code Pro", monospace;
+        background-color: #e2e8f0;
+        color: #1e293b;
+        padding: 0.1rem 0.3rem;
+        border-radius: 0.25rem;
+      }
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .step-number {
+        background-color: #f59e0b; /* amber-500 */
+        color: white;
+        border-radius: 9999px;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .pro-tip {
+        background-color: #fffbeb; /* amber-50 */
+        border-left: 4px solid #f59e0b; /* amber-500 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
+          Project 3: Sentiment Analysis API
+        </h1>
+        <p class="text-lg text-slate-600">
+          A guide to training, serving, and deploying a custom ML model as a
+          microservice.
+        </p>
+      </header>
+
+      <main class="space-y-16">
+        <!-- Section 1: Architecture & ML Lifecycle -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Architecture & ML Lifecycle
+          </h2>
+          <div class="space-y-4 text-slate-700 mb-8">
+            <p>
+              <strong>Project Goal:</strong> To build a self-contained,
+              containerized microservice that provides sentiment analysis. This
+              involves the full end-to-end machine learning lifecycle: data
+              preparation, model training, serialization, and deployment via a
+              high-performance API.
+            </p>
+            <p><strong>Core Technologies & Packages:</strong></p>
+            <ul class="list-disc list-inside ml-4">
+              <li><strong>Backend API:</strong> Python with FastAPI</li>
+              <li>
+                <strong>ML & Data Handling:</strong> Scikit-learn, Pandas,
+                Joblib (for model serialization)
+              </li>
+              <li><strong>Containerization:</strong> Docker</li>
+            </ul>
+          </div>
+
+          <h3 class="text-2xl font-bold mb-4">System Flow Diagram</h3>
+          <p class="mb-4 text-slate-700">
+            This diagram shows the two distinct phases: the one-time training
+            phase and the continuous serving phase.
+          </p>
+          <pre><code class="language-text">
+PHASE 1: MODEL TRAINING (Offline Process)
++--------------+   +----------------+   +-------------------+   +--------------------+
+| Labeled Text |-->| Pandas         |-->| Scikit-learn      |-->| Trained Model      |
+| Dataset      |   | DataFrame      |   | (Vectorizer +     |   | & Vectorizer Files |
+| (e.g., CSV)  |   | (Load & Clean) |   | Classifier)       |   | (e.g., model.joblib) |
++--------------+   +----------------+   +-------------------+   +--------------------+
+
+PHASE 2: API SERVING (Live Process)
+                                          +---------------------------------+
+                                          | FastAPI Application (Container) |
+                                          |---------------------------------|
+                                          | (1) Load Model & Vectorizer     |
+                                          |     (on application startup)    |
+                                          +---------------------------------+
+                                                          ^
+                                                          |
+Client --(2) POST /predict {"text":...}--> [ (3) Prediction Endpoint ] --(4)--> Prediction Logic
+                                                          |                      - Vectorize input text
+                                                          |                      - model.predict()
+                                                          v
+Client &lt;--(5) 200 OK {"sentiment":...}---- [ (6) Return Prediction ] &lt;--(5)-------
+                </code></pre>
+        </section>
+
+        <!-- Section 2: Implementation Strategy -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Implementation Strategy
+          </h2>
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  The Machine Learning Workflow (Training)
+                </h3>
+                <p class="text-slate-700">
+                  This initial phase is performed once to create the model
+                  artifacts. It's often done in a Jupyter Notebook or a
+                  standalone Python script (`train.py`).
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Data Loading:</strong> Use
+                    <strong>Pandas</strong> to load a labeled dataset (e.g.,
+                    IMDB movie reviews) into a DataFrame.
+                  </li>
+                  <li>
+                    <strong>Feature Engineering:</strong> Use
+                    <strong>Scikit-learn's `TfidfVectorizer`</strong> to convert
+                    the raw text reviews into a numerical matrix. This is a
+                    crucial step as ML models only understand numbers.
+                  </li>
+                  <li>
+                    <strong>Model Training:</strong> Split the data into
+                    training and testing sets. Train a simple but effective
+                    classification model, like `LogisticRegression` or
+                    `LinearSVC`, on the training data.
+                  </li>
+                  <li>
+                    <strong>Serialization:</strong> After training, save both
+                    the fitted `TfidfVectorizer` and the trained model to disk
+                    using <strong>`joblib.dump()`</strong>. You need to save
+                    both because the same vectorizer must be used to transform
+                    new, incoming text for prediction.
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Building the Inference API (FastAPI)
+                </h3>
+                <p class="text-slate-700">
+                  This is the core of the microservice that will serve
+                  predictions.
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Loading Artifacts on Startup:</strong> Use FastAPI's
+                    `lifespan` event handler to load the `model.joblib` and
+                    `vectorizer.joblib` files into global variables when the
+                    server starts. This is highly efficient as it avoids
+                    reloading the model on every single request.
+                  </li>
+                  <li>
+                    <strong>Defining the API Contract:</strong> Use Pydantic
+                    models to define the exact structure of the request body
+                    (e.g., a class with a single `text: str` field) and the
+                    response body (e.g., a class with `sentiment: str` and
+                    `confidence: float` fields).
+                  </li>
+                  <li>
+                    <strong>Creating the Prediction Endpoint:</strong> Create an
+                    `async def` endpoint for `/predict`. This endpoint will:
+                    <ol class="list-decimal list-inside ml-4">
+                      <li>Receive the request body, validated by Pydantic.</li>
+                      <li>
+                        Use the loaded vectorizer's `.transform()` method on the
+                        input text.
+                      </li>
+                      <li>
+                        Pass the transformed vector to the loaded model's
+                        `.predict()` (or `.predict_proba()`) method.
+                      </li>
+                      <li>
+                        Format the model's output into the Pydantic response
+                        model and return it.
+                      </li>
+                    </ol>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Containerizing the Service with Docker
+                </h3>
+                <p class="text-slate-700">
+                  Encapsulate the entire service for portability and easy
+                  deployment. The `Dockerfile` is the blueprint for this.
+                </p>
+                <div class="pro-tip mt-4">
+                  <p><strong>Key `Dockerfile` Steps:</strong></p>
+                  <ol class="list-decimal list-inside ml-2">
+                    <li>
+                      Start from an official Python base image (e.g.,
+                      `python:3.10-slim`).
+                    </li>
+                    <li>
+                      Set a working directory inside the container (`WORKDIR
+                      /app`).
+                    </li>
+                    <li>
+                      Copy the `requirements.txt` file and install dependencies.
+                      This step is done early to leverage Docker's layer
+                      caching.
+                    </li>
+                    <li>
+                      Copy your application code AND your saved model artifacts
+                      (`.joblib` files) into the container.
+                    </li>
+                    <li>
+                      Expose the port your FastAPI application will run on
+                      (e.g., `EXPOSE 8000`).
+                    </li>
+                    <li>Define the `CMD` to start the Uvicorn server.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">4</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Performance & Asynchronous Considerations
+                </h3>
+                <p class="text-slate-700">
+                  While Scikit-learn's `.predict()` method is synchronous
+                  (CPU-bound), FastAPI is smart about this. By default, it runs
+                  standard `def` route handlers in a separate thread pool,
+                  preventing them from blocking the main asynchronous event
+                  loop. For this project, this default behavior is perfectly
+                  adequate.
+                </p>
+                <p class="text-slate-700 mt-2">
+                  For extremely high-throughput scenarios or models with very
+                  long inference times, more advanced strategies could be
+                  explored, such as offloading prediction tasks to a separate
+                  worker process using a job queue like Celery.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

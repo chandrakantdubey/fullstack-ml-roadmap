@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 4 Guide: Personalized Content Recommendation Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+      }
+      pre {
+        font-family: "Source Code Pro", monospace;
+        background-color: #1e293b; /* slate-800 */
+        color: #e2e8f0; /* slate-200 */
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+      }
+      code {
+        font-family: "Source Code Pro", monospace;
+        background-color: #e2e8f0;
+        color: #1e293b;
+        padding: 0.1rem 0.3rem;
+        border-radius: 0.25rem;
+      }
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .step-number {
+        background-color: #f59e0b; /* amber-500 */
+        color: white;
+        border-radius: 9999px;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .pro-tip {
+        background-color: #fffbeb; /* amber-50 */
+        border-left: 4px solid #f59e0b; /* amber-500 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
+          Project 4: Personalized Recommendation Engine
+        </h1>
+        <p class="text-lg text-slate-600">
+          A guide to building a hybrid recommendation API using collaborative
+          and content-based filtering.
+        </p>
+      </header>
+
+      <main class="space-y-16">
+        <!-- Section 1: Architecture & Recommendation Strategies -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Architecture & Recommendation Strategies
+          </h2>
+          <div class="space-y-4 text-slate-700 mb-8">
+            <p>
+              <strong>Project Goal:</strong> To build a sophisticated API that
+              provides personalized content recommendations. This is not a
+              single model, but a <strong>hybrid system</strong> that combines
+              the strengths of two different recommendation techniques to
+              deliver more relevant and robust results.
+            </p>
+            <p><strong>Core Technologies & Packages:</strong></p>
+            <ul class="list-disc list-inside ml-4">
+              <li><strong>Backend API:</strong> Python with FastAPI</li>
+              <li>
+                <strong>Collaborative Filtering:</strong> The `surprise` library
+              </li>
+              <li>
+                <strong>Content-Based Filtering:</strong> Scikit-learn and
+                Pandas
+              </li>
+              <li>
+                <strong>Database:</strong> PostgreSQL for storing user, item,
+                and interaction data.
+              </li>
+            </ul>
+          </div>
+
+          <h3 class="text-2xl font-bold mb-4">Hybrid System Flow Diagram</h3>
+          <p class="mb-4 text-slate-700">
+            This diagram shows how a single request for recommendations triggers
+            two parallel processes that are combined at the end.
+          </p>
+          <pre><code class="language-text">
+Client --(1) GET /recommendations/{user_id}--> [ FastAPI Endpoint ]
+                                                        |
+                               +------------------------+------------------------+
+                               | (2a)                                           | (2b)
+                               v                                                v
++------------------------------------+           +-----------------------------------------+
+| Collaborative Filtering Engine     |           | Content-Based Filtering Engine          |
+|------------------------------------|           |-----------------------------------------|
+| - Uses Surprise library (SVD)      |           | - Uses Scikit-learn (TF-IDF)            |
+| - Analyzes user-item interactions  |           | - Analyzes item content (tags/text)     |
+| - Predicts ratings for unseen items|           | - Finds items similar to user's history |
++------------------------------------+           +-----------------------------------------+
+                 | (3a)                                           | (3b)
+                 v                                                v
+      [ List A: Top N Predicted Items ]              [ List B: Top N Similar Items ]
+                 |                                                |
+                 +------------------------+------------------------+
+                                          | (4)
+                                          v
+                              +---------------------+
+                              |   Hybrid Logic      |
+                              | (Ranking/Weighting) |
+                              +---------------------+
+                                          | (5)
+                                          v
+Client &lt;-- 200 OK [ Final Ranked List ] -- [ FastAPI Endpoint ]
+
+                </code></pre>
+        </section>
+
+        <!-- Section 2: Implementation Strategy -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Implementation Strategy
+          </h2>
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Data Modeling & Storage
+                </h3>
+                <p class="text-slate-700">
+                  A recommendation engine is only as good as its data. The first
+                  step is to design a robust database schema in PostgreSQL to
+                  store the three core entities:
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Users:</strong> A simple table with `user_id`.
+                  </li>
+                  <li>
+                    <strong>Items (Articles):</strong> A table with `item_id`,
+                    `title`, `content_text`, and `tags`.
+                  </li>
+                  <li>
+                    <strong>Interactions:</strong> A crucial table that links
+                    users and items. It should contain `user_id`, `item_id`, and
+                    a `rating` (explicit feedback) or `interaction_type` like
+                    'click' or 'view' (implicit feedback).
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Engine 1: Content-Based Filtering
+                </h3>
+                <p class="text-slate-700">
+                  This engine recommends items because they are "similar" to
+                  what a user has liked in the past. The implementation
+                  involves:
+                </p>
+                <ol
+                  class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Feature Extraction:</strong> Use Scikit-learn's
+                    `TfidfVectorizer` on the `content_text` or `tags` of all
+                    articles to create a numerical vector representation for
+                    each item.
+                  </li>
+                  <li>
+                    <strong>Similarity Calculation:</strong> Compute a
+                    similarity matrix (e.g., using `cosine_similarity`) that
+                    shows how similar each item is to every other item. This is
+                    a computationally intensive step that should be done offline
+                    and the resulting matrix saved.
+                  </li>
+                  <li>
+                    <strong>Recommendation Logic:</strong> To get
+                    recommendations for a user, find the items they have rated
+                    highly. For each of those items, look up its most similar
+                    items in the pre-computed similarity matrix. Aggregate and
+                    rank these similar items to produce a final list.
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Engine 2: Collaborative Filtering
+                </h3>
+                <p class="text-slate-700">
+                  This engine recommends items because "people like you also
+                  liked" them. It doesn't need to know anything about the items
+                  themselves, only how users have interacted with them. The
+                  implementation uses the `surprise` library:
+                </p>
+                <ol
+                  class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Data Loading:</strong> Load the `user_id`,
+                    `item_id`, and `rating` data from your PostgreSQL database
+                    into a `surprise` Dataset object.
+                  </li>
+                  <li>
+                    <strong>Model Training:</strong> Choose and train a matrix
+                    factorization algorithm like
+                    <strong>SVD (Singular Value Decomposition)</strong> on the
+                    dataset. The library handles the complex math.
+                  </li>
+                  <li>
+                    <strong>Prediction:</strong> Once trained, the model can
+                    predict a rating for any user-item pair, even if the user
+                    has never seen the item. To get recommendations for a user,
+                    you iterate through all the items they *haven't* interacted
+                    with and use the model to predict their rating for each. The
+                    items with the highest predicted ratings are your
+                    recommendations.
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">4</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Building the Hybrid API Endpoint
+                </h3>
+                <p class="text-slate-700">
+                  The FastAPI endpoint is the orchestrator that combines the
+                  results from both engines.
+                </p>
+                <div class="pro-tip mt-4">
+                  <p><strong>Hybrid Strategy (Weighted Ranking):</strong></p>
+                  <ol class="list-decimal list-inside ml-2">
+                    <li>
+                      For a given `user_id`, asynchronously call both the
+                      content-based and collaborative filtering functions to get
+                      two separate lists of recommended `item_id`s, each with a
+                      score.
+                    </li>
+                    <li>
+                      Assign a weight to each engine. For example, give
+                      collaborative filtering a weight of `0.7` and
+                      content-based a weight of `0.3`.
+                    </li>
+                    <li>
+                      Create a combined list of all unique items from both
+                      lists.
+                    </li>
+                    <li>
+                      For each item in the combined list, calculate a final
+                      hybrid score: `(collaborative_score * 0.7) +
+                      (content_score * 0.3)`. If an item only appeared in one
+                      list, its score from the other is treated as zero.
+                    </li>
+                    <li>
+                      Sort the items by this final hybrid score and return the
+                      top N results. This approach balances serendipity (from
+                      collaborative filtering) with relevance (from
+                      content-based filtering).
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">5</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Model Retraining and Management
+                </h3>
+                <p class="text-slate-700">
+                  Recommendation models become stale as new users, items, and
+                  interactions are added. A production system needs a strategy
+                  for retraining.
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Triggering:</strong> Create a secure API endpoint
+                    (e.g., `POST /retrain-models`) that triggers the full
+                    retraining process for both the content-based similarity
+                    matrix and the collaborative filtering SVD model.
+                  </li>
+                  <li>
+                    <strong>Workflow:</strong> This endpoint's logic will
+                    re-fetch the latest data from the PostgreSQL database,
+                    re-run the training scripts, and overwrite the old
+                    model/matrix files with the new ones.
+                  </li>
+                  <li>
+                    <strong>Production Approach:</strong> In a real-world
+                    scenario, this endpoint wouldn't be exposed publicly.
+                    Instead, it would be called by a scheduled task (e.g., a
+                    nightly cron job) to ensure the models are always fresh.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

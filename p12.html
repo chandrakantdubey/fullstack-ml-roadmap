@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 12 Guide: AI-Driven Automated Code Review SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+      }
+      pre {
+        font-family: "Source Code Pro", monospace;
+        background-color: #1e293b; /* slate-800 */
+        color: #e2e8f0; /* slate-200 */
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+      }
+      code {
+        font-family: "Source Code Pro", monospace;
+        background-color: #e2e8f0;
+        color: #1e293b;
+        padding: 0.1rem 0.3rem;
+        border-radius: 0.25rem;
+      }
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .step-number {
+        background-color: #f59e0b; /* amber-500 */
+        color: white;
+        border-radius: 9999px;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .pro-tip {
+        background-color: #fffbeb; /* amber-50 */
+        border-left: 4px solid #f59e0b; /* amber-500 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
+          Project 12: AI-Driven Automated Code Review
+        </h1>
+        <p class="text-lg text-slate-600">
+          A guide to building a capstone SaaS project integrating GitHub and AI.
+        </p>
+      </header>
+
+      <main class="space-y-16">
+        <!-- Section 1: Architecture & Core Concepts -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Event-Driven Architecture with GitHub
+          </h2>
+          <div class="space-y-4 text-slate-700 mb-8">
+            <p>
+              <strong>Project Goal:</strong> To build a complete SaaS product
+              that integrates directly into a developer's workflow. The
+              application will function as a GitHub App that, upon installation,
+              automatically reviews new pull requests in a repository, providing
+              AI-generated feedback on code quality, potential bugs, and style.
+              This capstone project combines event-driven architecture,
+              third-party API integration, and advanced AI prompting.
+            </p>
+            <p><strong>Core Technologies & Packages:</strong></p>
+            <ul class="list-disc list-inside ml-4">
+              <li><strong>Backend:</strong> NestJS</li>
+              <li><strong>Frontend Dashboard:</strong> Next.js</li>
+              <li>
+                <strong>Integration:</strong> GitHub API (for fetching code) &
+                Webhooks (for receiving events)
+              </li>
+              <li><strong>AI Service:</strong> OpenAI API</li>
+            </ul>
+          </div>
+
+          <h3 class="text-2xl font-bold mb-4">End-to-End Review Lifecycle</h3>
+          <p class="mb-4 text-slate-700">
+            This diagram shows the complete sequence of events from a developer
+            pushing code to receiving an AI-generated review.
+          </p>
+          <pre><code class="language-text">
++-------------+   +----------------+   +---------------------+   +---------------------+
+| Developer   |-->| GitHub         |-->| NestJS Backend      |-->| GitHub API          |
+| Pushes Code |(1)| (Pull Request) |(2)| (Webhook Handler)   |(3)| (Fetch PR Diff)     |
++-------------+   +----------------+   +----------+----------+   +----------+----------+
+                                                  |                           ^
+                                                  | (4) Code Diff             |
+                                                  v                           |
++-------------+   +----------------+   +----------+----------+   +----------+----------+
+| AI-Generated|&lt;--| GitHub API     |&lt;--| NestJS Backend      |-->| OpenAI API          |
+| PR Comment  |(7)| (Post Comment) |(6)| (Format & Send)     |(5)| (Analyze Diff)      |
++-------------+   +----------------+   +---------------------+   +---------------------+
+
+(1) A developer opens or updates a pull request on a repository where the app is installed.
+(2) GitHub fires a `pull_request` webhook event, sending a payload to our NestJS backend.
+(3) The backend validates the webhook and uses the GitHub API to fetch the "diff" (the code changes) for that PR.
+(4) The code diff is received by the backend.
+(5) The backend sends the diff to the OpenAI API with a carefully engineered prompt.
+(6) The OpenAI API returns a structured analysis of the code.
+(7) The backend formats this analysis into a user-friendly comment and uses the GitHub API to post it on the original pull request.
+                </code></pre>
+        </section>
+
+        <!-- Section 2: Implementation Strategy -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Implementation Strategy
+          </h2>
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Creating and Configuring the GitHub App
+                </h3>
+                <p class="text-slate-700">
+                  This is the foundation of the entire service. You will
+                  register a new GitHub App in your GitHub settings. The
+                  configuration is critical:
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Webhook URL:</strong> This must point to the public
+                    URL of your deployed NestJS backend endpoint (e.g.,
+                    `https://my-code-reviewer.onrender.com/api/github/webhooks`).
+                  </li>
+                  <li>
+                    <strong>Webhook Secret:</strong> A secret string used to
+                    secure and validate incoming webhook payloads.
+                  </li>
+                  <li>
+                    <strong>Permissions:</strong> The app needs specific
+                    permissions. At a minimum, it will require `Read` access to
+                    "Contents" and `Read & Write` access to "Pull requests" to
+                    fetch code and post comments.
+                  </li>
+                  <li>
+                    <strong>Event Subscriptions:</strong> You will subscribe
+                    only to the necessary events, primarily the `pull_request`
+                    event.
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Backend: The Secure Webhook Handler (NestJS)
+                </h3>
+                <p class="text-slate-700">
+                  You will create a dedicated controller in your NestJS
+                  application to handle incoming webhooks from GitHub. This is a
+                  security-critical component.
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Payload Validation:</strong> The handler must first
+                    verify the signature of every incoming request using the
+                    webhook secret. This ensures that the request is genuinely
+                    from GitHub and not a malicious actor.
+                  </li>
+                  <li>
+                    <strong>Event Filtering:</strong> The handler will inspect
+                    the webhook payload to determine the `action` of the event
+                    (e.g., `opened`, `synchronize`). The review logic should
+                    only trigger for relevant actions.
+                  </li>
+                  <li>
+                    <strong>Job Queuing:</strong> For scalability, the handler
+                    should not perform the code analysis directly. Instead, its
+                    only job is to validate the event and push a "job"
+                    (containing information like the repository name and PR
+                    number) onto a message queue like RabbitMQ. A separate
+                    worker service will process these jobs.
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Backend: Authenticating and Interacting with the GitHub API
+                </h3>
+                <p class="text-slate-700">
+                  To act on behalf of an installation, your service must
+                  authenticate as the GitHub App. This is a multi-step process:
+                </p>
+                <ol
+                  class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    Generate a short-lived JSON Web Token (JWT) signed with your
+                    app's private key.
+                  </li>
+                  <li>
+                    Use this JWT to get an "installation access token" for the
+                    specific repository that triggered the webhook.
+                  </li>
+                  <li>
+                    Use this installation access token to make authenticated
+                    calls to the GitHub API to fetch the pull request diff and
+                    post comments. You will use a library like `Octokit` to
+                    simplify these interactions.
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">4</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  The Core Intelligence: Advanced Prompt Engineering
+                </h3>
+                <p class="text-slate-700">
+                  The quality of the AI review depends almost entirely on the
+                  quality of the prompt sent to the LLM. You will engineer a
+                  detailed, role-based prompt.
+                </p>
+                <div class="pro-tip mt-4">
+                  <p><strong>Example Prompt Structure:</strong></p>
+                  <pre><code>You are an expert senior software engineer performing a code review.
+Analyze the following code diff. Provide your feedback as a concise summary followed by a list of specific, actionable suggestions.
+Categorize each suggestion as one of: [BUG], [STYLE], [MAINTAINABILITY], or [DOCUMENTATION].
+If there are no issues, respond with "Looks good to me!".
+
+Here is the diff:
+---
+{code_diff_goes_here}
+---
+                                </code></pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">5</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  The Frontend Dashboard (Next.js)
+                </h3>
+                <p class="text-slate-700">
+                  While the core logic is in the backend, a frontend dashboard
+                  is necessary for user management and onboarding. This Next.js
+                  application will:
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Handle User Authentication:</strong> Allow users to
+                    sign in with their GitHub account using OAuth.
+                  </li>
+                  <li>
+                    <strong>Manage Installations:</strong> Display a list of
+                    repositories where the user has installed the GitHub App.
+                  </li>
+                  <li>
+                    <strong>Show Review History:</strong> Provide a dashboard
+                    showing a log of the most recent pull requests reviewed by
+                    the AI.
+                  </li>
+                  <li>
+                    <strong>Handle Subscriptions:</strong> Integrate a service
+                    like Stripe to manage user subscriptions for the SaaS
+                    product.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

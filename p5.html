@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 5 Guide: Niche CRM for Freelancers (GraphQL API)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+      }
+      pre {
+        font-family: "Source Code Pro", monospace;
+        background-color: #1e293b; /* slate-800 */
+        color: #e2e8f0; /* slate-200 */
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+      }
+      code {
+        font-family: "Source Code Pro", monospace;
+        background-color: #e2e8f0;
+        color: #1e293b;
+        padding: 0.1rem 0.3rem;
+        border-radius: 0.25rem;
+      }
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .step-number {
+        background-color: #f59e0b; /* amber-500 */
+        color: white;
+        border-radius: 9999px;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .pro-tip {
+        background-color: #fffbeb; /* amber-50 */
+        border-left: 4px solid #f59e0b; /* amber-500 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
+          Project 5: Niche CRM for Freelancers (GraphQL API)
+        </h1>
+        <p class="text-lg text-slate-600">
+          A guide to building a scalable, enterprise-grade backend with NestJS
+          and GraphQL.
+        </p>
+      </header>
+
+      <main class="space-y-16">
+        <!-- Section 1: Architecture & Core Concepts -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Architecture & Core Concepts
+          </h2>
+          <div class="space-y-4 text-slate-700 mb-8">
+            <p>
+              <strong>Project Goal:</strong> To build a highly structured,
+              maintainable, and scalable backend for a CRM application. The key
+              architectural decision is to use <strong>GraphQL</strong> instead
+              of REST, allowing clients to request precisely the data they need.
+              We will use <strong>NestJS</strong> for its opinionated, modular
+              structure, which is ideal for large, complex applications.
+            </p>
+            <p><strong>Core Technologies & Packages:</strong></p>
+            <ul class="list-disc list-inside ml-4">
+              <li><strong>Backend Framework:</strong> NestJS</li>
+              <li>
+                <strong>API Specification:</strong> GraphQL (using
+                `@nestjs/graphql` and `apollo-server-express`)
+              </li>
+              <li><strong>Database:</strong> PostgreSQL</li>
+              <li><strong>ORM:</strong> TypeORM</li>
+              <li><strong>Containerization:</strong> Docker</li>
+            </ul>
+          </div>
+
+          <h3 class="text-2xl font-bold mb-4">
+            GraphQL Request Lifecycle in NestJS
+          </h3>
+          <p class="mb-4 text-slate-700">
+            This diagram illustrates how a GraphQL query flows through the
+            different layers of a NestJS application.
+          </p>
+          <pre><code class="language-text">
+Client --(1) GraphQL Query--> [ Apollo Server (in NestJS) ]
+                                          |
+                                          | (2) Parse & Validate Query
+                                          v
+                              +-------------------------+
+                              |   GraphQL Module        |
+                              |-------------------------|
+                              | - Maps query/mutation   |
+                              |   to a specific         |
+                              |   Resolver method       |
+                              +-------------------------+
+                                          |
+                                          | (3) Call Resolver Method
+                                          v
++--------------------------------------------------------------------------+
+| NestJS Application Layer                                                 |
+|--------------------------------------------------------------------------|
+|   [ @Resolver() ] --(4) Injects & Calls--> [ @Injectable() Service ]      |
+|   - Handles GraphQL request              - Contains business logic       |
+|   - Delegates logic to a Service         - Interacts with the database   |
+|                                                     | (5)                  |
+|                                                     v                      |
+|                                          [ TypeORM Repository ]          |
+|                                          - Executes DB query             |
++--------------------------------------------------------------------------+
+                                                     | (6)
+                                                     v
+                                          +---------------------+
+                                          | PostgreSQL Database |
+                                          +---------------------+
+                </code></pre>
+        </section>
+
+        <!-- Section 2: Implementation Strategy -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Implementation Strategy
+          </h2>
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Embracing the NestJS Architecture
+                </h3>
+                <p class="text-slate-700">
+                  Unlike minimalist frameworks, NestJS enforces a specific
+                  structure. The first step is to internalize its core building
+                  blocks:
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Modules (`@Module()`):</strong> The fundamental
+                    organizational unit. You will create separate modules for
+                    each feature (e.g., `ClientsModule`, `ProjectsModule`). Each
+                    module encapsulates its own controllers/resolvers, services,
+                    and data models.
+                  </li>
+                  <li>
+                    <strong>Providers/Services (`@Injectable()`):</strong> These
+                    classes handle the business logic. For example, a
+                    `ProjectsService` will contain methods like `createProject`
+                    or `findTasksForProject`.
+                  </li>
+                  <li>
+                    <strong>Resolvers (`@Resolver()`):</strong> In a GraphQL
+                    context, these replace traditional controllers. They define
+                    the entry points for your API queries and mutations and
+                    delegate the actual work to the services.
+                  </li>
+                </ul>
+                <div class="pro-tip mt-4">
+                  <p>
+                    <strong>Dependency Injection:</strong> NestJS manages the
+                    instantiation of your classes. You will use constructor
+                    injection to provide services to your resolvers (e.g.,
+                    `constructor(private readonly projectsService:
+                    ProjectsService) {}`). This makes your code highly testable
+                    and decoupled.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Database Modeling with TypeORM Entities
+                </h3>
+                <p class="text-slate-700">
+                  Using the "database-first" approach with an ORM, you'll define
+                  your database schema using TypeScript classes and decorators.
+                  TypeORM will then synchronize this schema with your PostgreSQL
+                  database.
+                </p>
+                <p class="text-slate-700 mt-2">
+                  You will define entities for `Client`, `Project`, and `Task`,
+                  establishing relationships between them (e.g., a `Client` has
+                  many `Projects`, a `Project` has many `Tasks`).
+                </p>
+                <pre><code class="language-typescript">// Snippet: project.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Client } from './client.entity';
+
+@Entity()
+export class Project {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @ManyToOne(() => Client, client => client.projects)
+  client: Client;
+  // ... other fields and relationships
+}
+</code></pre>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Code-First GraphQL Schema Generation
+                </h3>
+                <p class="text-slate-700">
+                  Instead of writing GraphQL schema files by hand, you will use
+                  NestJS's code-first approach. This involves using decorators
+                  on your TypeScript classes to define your GraphQL types,
+                  queries, and mutations. This keeps your code and schema
+                  perfectly in sync.
+                </p>
+                <pre><code class="language-typescript">// Snippet: project.resolver.ts
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+
+@Resolver(() => ProjectType)
+export class ProjectResolver {
+  constructor(private readonly projectsService: ProjectsService) {}
+
+  @Query(() => ProjectType)
+  async project(@Args('id') id: number) {
+    return this.projectsService.findOne(id);
+  }
+
+  @Mutation(() => ProjectType)
+  async createProject(@Args('input') input: CreateProjectInput) {
+    return this.projectsService.create(input);
+  }
+}
+</code></pre>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">4</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Solving the N+1 Problem with DataLoader
+                </h3>
+                <p class="text-slate-700">
+                  A critical performance optimization in GraphQL is solving the
+                  N+1 query problem. When fetching a list of projects and their
+                  associated clients, a naive implementation would execute 1
+                  query for the projects, and then N additional queries for each
+                  project's client.
+                </p>
+                <p class="text-slate-700 mt-2">
+                  You will implement the <strong>DataLoader</strong> pattern.
+                  DataLoader is a utility that batches and caches database
+                  requests within a single API call. You'll create a
+                  `DataLoader` for each related entity (e.g., a `ClientLoader`)
+                  that takes a list of client IDs and fetches them all in a
+                  single `SELECT ... WHERE id IN (...)` query, dramatically
+                  reducing database load.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">5</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Adding Real-Time Functionality with Subscriptions
+                </h3>
+                <p class="text-slate-700">
+                  To make the CRM dynamic, you will implement GraphQL
+                  Subscriptions. This allows clients to "subscribe" to events.
+                  For example, a client could subscribe to updates for a
+                  specific project.
+                </p>
+                <p class="text-slate-700 mt-2">
+                  When a mutation modifies that project (e.g., a task is
+                  completed), the mutation's resolver will use a `PubSub`
+                  (Publish/Subscribe) engine to publish an event. The
+                  subscription resolver will then push the updated data to all
+                  subscribed clients in real-time over WebSockets.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project 10 Guide: Inter-Service Communication & API Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 700;
+      }
+      pre {
+        font-family: "Source Code Pro", monospace;
+        background-color: #1e293b; /* slate-800 */
+        color: #e2e8f0; /* slate-200 */
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        font-size: 0.875rem;
+      }
+      code {
+        font-family: "Source Code Pro", monospace;
+        background-color: #e2e8f0;
+        color: #1e293b;
+        padding: 0.1rem 0.3rem;
+        border-radius: 0.25rem;
+      }
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+        border-radius: 0;
+      }
+      .step-number {
+        background-color: #f59e0b; /* amber-500 */
+        color: white;
+        border-radius: 9999px;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .pro-tip {
+        background-color: #fffbeb; /* amber-50 */
+        border-left: 4px solid #f59e0b; /* amber-500 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
+          Project 10: Advanced Microservices
+        </h1>
+        <p class="text-lg text-slate-600">
+          A guide to implementing robust inter-service communication and an API
+          Gateway.
+        </p>
+      </header>
+
+      <main class="space-y-16">
+        <!-- Section 1: Architecture & Core Concepts -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Decoupled Architecture with an API Gateway
+          </h2>
+          <div class="space-y-4 text-slate-700 mb-8">
+            <p>
+              <strong>Project Goal:</strong> To refactor the tightly-coupled
+              microservices from Project 9 into a resilient, scalable, and
+              maintainable system. This will be achieved by eliminating direct
+              synchronous calls in favor of an asynchronous, event-driven
+              approach using a message broker. Additionally, a new API Gateway
+              service will be introduced to act as a single, unified entry point
+              for all external clients.
+            </p>
+            <p><strong>Core Technologies & Packages:</strong></p>
+            <ul class="list-disc list-inside ml-4">
+              <li><strong>Framework:</strong> NestJS</li>
+              <li><strong>Message Broker:</strong> RabbitMQ</li>
+              <li>
+                <strong>Communication (Async):</strong> `@nestjs/microservices`
+                with RabbitMQ transport
+              </li>
+              <li><strong>Orchestration:</strong> Docker Compose</li>
+            </ul>
+          </div>
+
+          <h3 class="text-2xl font-bold mb-4">
+            Event-Driven Architecture Diagram
+          </h3>
+          <p class="mb-4 text-slate-700">
+            This diagram illustrates the new, decoupled communication flow,
+            which eliminates the direct, brittle HTTP calls from the previous
+            design.
+          </p>
+          <pre><code class="language-text">
++--------+   +----------------+   +------------------+
+| Client |-->|                |-->|                  |
+|        |(1)| API Gateway    |(2)| User Service     |
++--------+   | (NestJS App)   |   | (and DB)         |
+             |                |   +------------------+
+             +-------+--------+
+                     |
+                     | (3) POST /orders
+                     v
++------------------+       +------------------+       +------------------+
+|                  |------>|                  |------>|                  |
+| Order Service    |  (4)  | RabbitMQ         |  (5)  | Product Service  |
+| (and DB)         |       | (Message Broker) |       | (and DB)         |
+|                  |       |                  |       |                  |
++------------------+       +------------------+       +------------------+
+
+(1) A client makes a request to a public endpoint on the API Gateway (e.g., GET /api/users).
+(2) The Gateway validates the request (e.g., checks JWT) and routes it to the appropriate internal service (User Service).
+(3) To create an order, the client sends a request to the Gateway, which routes it to the Order Service.
+(4) The Order Service creates the order in its DB and PUBLISHES an `order_created` event to RabbitMQ. It does NOT call other services directly.
+(5) The Product Service SUBSCRIBES to `order_created` events. When it receives one, it updates its own stock inventory. The Order Service is unaware of this.
+                </code></pre>
+        </section>
+
+        <!-- Section 2: Implementation Strategy -->
+        <section>
+          <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">
+            Implementation Strategy
+          </h2>
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Integrating the Message Broker
+                </h3>
+                <p class="text-slate-700">
+                  The first step is to introduce RabbitMQ into the system. This
+                  involves adding the RabbitMQ service to the
+                  `docker-compose.yml` file. Then, in each NestJS service that
+                  needs to communicate asynchronously, you will install
+                  `@nestjs/microservices` and configure the RabbitMQ "transport
+                  layer". This tells NestJS how to connect to and communicate
+                  with the message broker.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Refactoring the Order Service to be an Event Publisher
+                </h3>
+                <p class="text-slate-700">
+                  The `OrderService` will be modified to become an event
+                  publisher. The direct HTTP calls to the User and Product
+                  services will be removed entirely. Instead, after successfully
+                  saving a new order to its own database, the service will use
+                  the NestJS `ClientProxy` to emit an `order_created` event to
+                  RabbitMQ.
+                </p>
+                <div class="pro-tip mt-4">
+                  <p>
+                    <strong>Event-Carried State Transfer:</strong> The
+                    `order_created` event should contain all the necessary
+                    information for any downstream service to act upon it (e.g.,
+                    `orderId`, `userId`, `productId`, `quantity`). This prevents
+                    consumers from having to call back to the Order Service to
+                    get more details, further enhancing decoupling.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Refactoring Services to be Event Consumers
+                </h3>
+                <p class="text-slate-700">
+                  The `ProductService` will be modified to become an event
+                  consumer. You will create a method decorated with
+                  `@EventPattern('order_created')`. NestJS will automatically
+                  register this method as a listener for that specific event on
+                  the RabbitMQ queue. When an `order_created` event is received,
+                  this method will execute its logic to update the product's
+                  stock quantity.
+                </p>
+                <p class="text-slate-700 mt-2">
+                  This demonstrates the power of this pattern: you could add a
+                  new `NotificationService` that also listens for
+                  `order_created` events to send an email to the user, and you
+                  would not need to change a single line of code in the
+                  `OrderService`.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">4</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Building the API Gateway
+                </h3>
+                <p class="text-slate-700">
+                  A new, fourth NestJS application will be created: the
+                  `api-gateway`. This service is the only one that should be
+                  exposed to the public internet. Its primary responsibilities
+                  are:
+                </p>
+                <ul
+                  class="list-disc list-inside ml-4 text-slate-700 space-y-2 mt-2"
+                >
+                  <li>
+                    <strong>Request Routing:</strong> It will receive all
+                    incoming client traffic and act as a reverse proxy,
+                    forwarding requests to the appropriate internal
+                    microservice. For example, a request to `/api/products` gets
+                    forwarded to the `products-service`.
+                  </li>
+                  <li>
+                    <strong>Protocol Translation:</strong> It can translate
+                    between different protocols if needed, though in this case,
+                    it will primarily be HTTP to HTTP.
+                  </li>
+                  <li>
+                    <strong>Centralizing Cross-Cutting Concerns:</strong> It
+                    will handle tasks that apply to all services, such as
+                    authentication, rate limiting, and logging.
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="step-number">5</div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">
+                  Implementing Centralized Authentication in the Gateway
+                </h3>
+                <p class="text-slate-700">
+                  The authentication logic (JWT validation using the
+                  `JwtStrategy` from Project 6) will be moved from the
+                  individual services to the API Gateway. The Gateway will be
+                  responsible for validating the `Authorization` header.
+                </p>
+                <p class="text-slate-700 mt-2">
+                  If the token is valid, the Gateway can then inject user
+                  information (like the `userId` from the token payload) into a
+                  custom HTTP header (e.g., `x-user-id`) before forwarding the
+                  request to the downstream service. The internal services can
+                  now trust this header and don't need to perform their own
+                  token validation, simplifying their logic and centralizing
+                  security concerns.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

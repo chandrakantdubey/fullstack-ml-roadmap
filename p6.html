@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 6 Guide: Secure Membership Platform for Paid Newsletter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 700;
+        }
+        pre {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+        }
+        code {
+            font-family: 'Source Code Pro', monospace;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.25rem;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+        }
+        .step-number {
+            background-color: #f59e0b; /* amber-500 */
+            color: white;
+            border-radius: 9999px;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .pro-tip {
+            background-color: #fffbeb; /* amber-50 */
+            border-left: 4px solid #f59e0b; /* amber-500 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 6: Secure Membership Platform</h1>
+            <p class="text-lg text-slate-600">A guide to building a production-grade authentication and authorization system with NestJS.</p>
+        </header>
+
+        <main class="space-y-16">
+            <!-- Section 1: Architecture & Core Concepts -->
+            <section>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Architecture & Authentication Flow</h2>
+                <div class="space-y-4 text-slate-700 mb-8">
+                    <p><strong>Project Goal:</strong> To build a complete authentication (who you are) and authorization (what you can do) system. This backend will manage user registration, secure login, and protect API endpoints based on user roles (e.g., `free_user` vs. `paid_subscriber`), forming the security backbone of any SaaS application.</p>
+                    <p><strong>Core Technologies & Packages:</strong></p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Framework:</strong> NestJS</li>
+                        <li><strong>Authentication Library:</strong> Passport.js (`@nestjs/passport`, `passport-local`, `passport-jwt`)</li>
+                        <li><strong>Token Standard:</strong> JSON Web Tokens (JWT) (`@nestjs/jwt`)</li>
+                        <li><strong>Password Hashing:</strong> Bcrypt</li>
+                        <li><strong>Database/ORM:</strong> PostgreSQL with TypeORM</li>
+                    </ul>
+                </div>
+
+                <h3 class="text-2xl font-bold mb-4">Authentication & Authorization Lifecycle</h3>
+                <p class="mb-4 text-slate-700">This diagram shows the end-to-end flow, from a user logging in to accessing a role-protected resource.</p>
+                <pre><code class="language-text">
+[1. Login]
+Client --(POST /auth/login {email, pass})--> [ LocalAuthGuard ] -> [ LocalStrategy ]
+                                                      |                  |
+                                                      | (Validates credentials vs DB)
+                                                      v
+                                                [ AuthService.login() ] --(Issues)--> { accessToken, refreshToken }
+                                                      |
+                                                      v
+                                                 Client (Stores Tokens)
+
+[2. Accessing a Protected Resource]
+Client --(GET /premium-content)--> [ JwtAuthGuard ] -> [ JwtStrategy ]
+           (Header: Bearer <accessToken>)       |             |
+                                                | (Validates JWT signature & expiry)
+                                                v
+                                          [ RolesGuard ] --(Checks 'roles' in JWT payload)--> [ Controller/Resolver ]
+                                                                                                      |
+                                                                                                      v
+                                                                                                (Returns premium content)
+                </code></pre>
+            </section>
+
+            <!-- Section 2: Implementation Strategy -->
+            <section>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Implementation Strategy</h2>
+                <div class="space-y-8">
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">1</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Secure User Modeling</h3>
+                            <p class="text-slate-700">The foundation is a secure `User` entity. The most critical aspect is handling passwords. <strong>Never store plain-text passwords.</strong></p>
+                            <p class="text-slate-700 mt-2">You will use TypeORM's lifecycle hooks (`@BeforeInsert`) to automatically hash the user's password with **Bcrypt** before it's ever saved to the database. You will also add a `roles` array to this entity to store authorization roles.</p>
+                            <pre><code class="language-typescript">// Snippet: user.entity.ts
+import { BeforeInsert, Column, Entity } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+
+@Entity()
+export class User {
+  // ... other fields: id, email, etc.
+
+  @Column()
+  password: string;
+
+  @Column('text', { array: true, default: ['free_user'] })
+  roles: string[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+}
+</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">2</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Implementing Login with Passport's LocalStrategy</h3>
+                            <p class="text-slate-700">The `LocalStrategy` is responsible for the traditional email/password login flow. You will create a `LocalStrategy` class that extends `PassportStrategy`. Its `validate` method will receive the email and password from the login request. Inside this method, you will:</p>
+                            <ol class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li>Find the user in the database by their email.</li>
+                                <li>If the user exists, use `bcrypt.compare()` to check if the provided password matches the stored hash.</li>
+                                <li>If they match, return the user object. If not, throw an `UnauthorizedException`.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">3</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Issuing Tokens with the JWT Service</h3>
+                            <p class="text-slate-700">Once the `LocalStrategy` successfully authenticates a user, your `AuthService` takes over. It will have a `login` method that receives the validated user object.</p>
+                             <p class="text-slate-700 mt-2">This method uses the `@nestjs/jwt` service's `sign` method to create a JWT. The payload of this token is crucial: it should contain non-sensitive data needed for future requests, such as the `userId` (often called `sub` for subject) and the user's `roles`.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">4</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Protecting Endpoints with the JWTStrategy and Guards</h3>
+                            <p class="text-slate-700">To protect endpoints, you'll implement a `JwtStrategy`. This strategy's job is to extract the JWT from the `Authorization: Bearer <token>` header, verify its signature and expiration using a secret key (stored in an environment variable), and return the validated payload. NestJS then automatically attaches this payload to the `request` object.</p>
+                             <p class="text-slate-700 mt-2">You can then protect any controller or resolver method by simply applying the `@UseGuards(JwtAuthGuard)` decorator.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">5</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Implementing Authorization with a Custom RolesGuard</h3>
+                            <p class="text-slate-700">This step moves beyond authentication to authorization. You will create a custom `RolesGuard`. This guard will:</p>
+                            <ol class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li>Use NestJS's `Reflector` to determine which roles are required for the specific endpoint being accessed.</li>
+                                <li>Access the `user` object (which was attached to the request by the `JwtStrategy`).</li>
+                                <li>Compare the roles on the `user` object with the required roles.</li>
+                                <li>Return `true` if the user has the required role, or throw a `ForbiddenException` if they do not.</li>
+                            </ol>
+                             <div class="pro-tip mt-4">
+                                <p><strong>Custom Decorators:</strong> You will also create a custom `@Roles('paid_subscriber')` decorator. This provides a clean, declarative way to specify the required roles directly on your controller methods, making your authorization logic easy to read and manage.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="flex items-start gap-4">
+                        <div class="step-number">6</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Advanced: Implementing a Refresh Token Strategy</h3>
+                            <p class="text-slate-700">For enhanced security and better user experience, you will implement a refresh token flow. This involves:</p>
+                             <ol class="list-decimal list-inside ml-4 text-slate-700 space-y-2 mt-2">
+                                <li>When a user logs in, issue both a short-lived access token (e.g., 15 minutes) and a long-lived refresh token (e.g., 7 days).</li>
+                                <li>Securely store a hashed version of the refresh token in the database, associated with the user.</li>
+                                <li>Create a new public endpoint (e.g., `/auth/refresh`).</li>
+                                <li>When an access token expires, the client sends the refresh token to this endpoint. The endpoint validates the refresh token against the stored hash and, if valid, issues a new access token.</li>
+                                <li>This strategy ensures that even if an access token is compromised, its lifespan is very short, minimizing potential damage.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
