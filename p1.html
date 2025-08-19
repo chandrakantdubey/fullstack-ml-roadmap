@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project 1 Guide: Personal Portfolio Website</title>
+    <title>Project 1 Guide: Full-Stack MERN Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             font-weight: 700;
         }
         pre {
@@ -24,7 +24,7 @@
             overflow-x: auto;
             font-size: 0.875rem;
         }
-        code.language-html, code.language-css, code.language-bash {
+        code {
             font-family: 'Source Code Pro', monospace;
         }
         .step-number {
@@ -40,324 +40,391 @@
             font-size: 1.25rem;
             flex-shrink: 0;
         }
+        .pro-tip {
+            background-color: #eef2ff; /* indigo-50 */
+            border-left: 4px solid #4f46e5; /* indigo-600 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 1: Personal Portfolio Website</h1>
-            <p class="text-lg text-slate-600">A detailed guide to building your first major project using HTML and CSS.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 1: Full-Stack MERN Portfolio</h1>
+            <p class="text-lg text-slate-600">A detailed guide to building a dynamic portfolio with React, Node.js, Express, and MongoDB.</p>
         </header>
 
         <main class="space-y-16">
-            <!-- Section 1: Introduction -->
+            <!-- Section 1: Introduction & Architecture -->
             <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Introduction</h2>
-                <div class="space-y-4 text-slate-700">
-                    <p><strong>Project Goal:</strong> To build a clean, professional, and responsive single-page portfolio website from scratch. This will be your digital resume and the place to showcase all the amazing projects you'll build in the future.</p>
-                    <p><strong>Why it's important:</strong> A portfolio is the most important asset for a web developer. It proves your skills to potential employers far better than a resume alone. This foundational project teaches you the essential structure and styling of a modern webpage.</p>
-                    <p><strong>Technologies Used:</strong> We'll stick to the fundamentals: <strong>HTML5</strong> for structure, and <strong>CSS3</strong> for styling (including modern layout techniques like <strong>Flexbox</strong> and <strong>Grid</strong>). We will also use <strong>Git</strong> for version control.</p>
+                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Introduction & Architecture</h2>
+                <div class="space-y-4 text-slate-700 mb-8">
+                    <p><strong>Project Goal:</strong> To build a dynamic, database-driven portfolio. Instead of hard-coding your projects in HTML, you'll store them in a MongoDB database. A Node.js backend will serve this data via a REST API, and a React frontend will fetch and display it. The site will also feature a contact form that saves messages directly to your database.</p>
+                    <p><strong>Technologies Used:</strong> This is a full MERN stack project.</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>MongoDB:</strong> A NoSQL database to store project and contact information.</li>
+                        <li><strong>Express.js:</strong> A Node.js framework to build our backend REST API.</li>
+                        <li><strong>React:</strong> A JavaScript library to build our dynamic frontend user interface.</li>
+                        <li><strong>Node.js:</strong> The JavaScript runtime environment for our server.</li>
+                    </ul>
                 </div>
+
+                <h3 class="text-2xl font-bold mb-4">Application Flow Diagram</h3>
+                <p class="mb-4 text-slate-700">This diagram illustrates how the different parts of our application will interact.</p>
+                <pre><code class="language-text">
+  User's Browser                Backend Server (Node/Express)         Database (MongoDB)
+  +----------------+            +-----------------------------+       +------------------+
+  |                |            |                             |       |                  |
+  |  React App     | --(1)----&gt; | GET /api/projects           | --(2)-&gt; |  Projects        |
+  | (Frontend)     | &lt;-(4)----  | (Fetch all projects)        | &lt;-(3)-  |  Collection      |
+  |                |            |                             |       |                  |
+  +----------------+            +-----------------------------+       +------------------+
+        |  ^
+        |  | User interacts
+        v  |
+  +----------------+            +-----------------------------+       +------------------+
+  |                |            |                             |       |                  |
+  |  Contact Form  | --(5)----&gt; | POST /api/messages          | --(6)-&gt; |  Messages        |
+  |                | &lt;-(8)----  | (Save new message)          | &lt;-(7)-  |  Collection      |
+  |                |            |                             |       |                  |
+  +----------------+            +-----------------------------+       +------------------+
+
+(1) Frontend requests project data on page load.
+(2) Server queries the database for all projects.
+(3) Database returns the project documents.
+(4) Server sends the project data back to the frontend as JSON.
+(5) User submits the contact form; frontend sends data to the server.
+(6) Server validates and saves the new message to the database.
+(7) Database confirms the save operation.
+(8) Server sends a success response back to the frontend.
+                </code></pre>
             </section>
 
-            <!-- Section 2: Final Product Preview -->
+            <!-- Section 2: Backend Implementation -->
             <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Final Product Preview</h2>
-                <p class="mb-4 text-slate-700">Here is a simple preview of what we're going to build. It's designed to be clean, modern, and easy for recruiters to navigate.</p>
-                <div class="border-4 border-slate-200 rounded-xl p-4 bg-white shadow-lg">
-                    <div class="w-full h-96 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500">
-                        
+                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 1: Backend Setup (Node.js, Express, MongoDB)</h2>
+                <p class="mb-6 text-slate-700">Let's start by building the API that will serve our data. Create a new folder for your project called <code>portfolio-app</code>, and inside it, create a folder named <code>server</code>.</p>
+
+                <div class="space-y-8">
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">A</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Initialize Node.js Project</h3>
+                            <p class="text-slate-700 mb-2">Navigate into the <code>server</code> directory in your terminal and run:</p>
+                            <pre><code class="language-bash">cd server
+npm init -y
+npm install express mongoose cors dotenv</code></pre>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">B</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Create the Server File Structure</h3>
+                            <p class="text-slate-700 mb-2">Create the following folders and files inside your <code>server</code> directory. This structure keeps our code organized and scalable.</p>
+                            <pre><code class="language-text">
+/server
+|-- models/
+|   |-- projectModel.js
+|   `-- messageModel.js
+|-- routes/
+|   |-- api.js
+|-- .env
+`-- server.js
+                            </code></pre>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">C</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Define Database Models</h3>
+                            <p class="text-slate-700 mb-2">Mongoose uses schemas to define the structure of documents in a MongoDB collection.</p>
+                            <h4 class="font-semibold mb-1 mt-4"><code>models/projectModel.js</code></h4>
+                            <pre><code class="language-javascript">const mongoose = require('mongoose');
+const projectSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    technologies: [String],
+    link: { type: String, required: true },
+});
+module.exports = mongoose.model('Project', projectSchema);</code></pre>
+                            <h4 class="font-semibold mb-1 mt-4"><code>models/messageModel.js</code></h4>
+                            <pre><code class="language-javascript">const mongoose = require('mongoose');
+const messageSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    message: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+});
+module.exports = mongoose.model('Message', messageSchema);</code></pre>
+                        </div>
+                    </div>
+                     <div class="flex items-start gap-4">
+                        <div class="step-number">D</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Build the API Routes</h3>
+                            <p class="text-slate-700 mb-2">These routes define the endpoints our frontend will communicate with.</p>
+                            <h4 class="font-semibold mb-1 mt-4"><code>routes/api.js</code></h4>
+                            <pre><code class="language-javascript">const express = require('express');
+const router = express.Router();
+const Project = require('../models/projectModel');
+const Message = require('../models/messageModel');
+
+// GET all projects
+router.get('/projects', async (req, res) => {
+    try {
+        const projects = await Project.find();
+        res.json(projects);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// POST a new message
+router.post('/messages', async (req, res) => {
+    const message = new Message({
+        name: req.body.name,
+        email: req.body.email,
+        message: req.body.message,
+    });
+    try {
+        const newMessage = await message.save();
+        res.status(201).json(newMessage);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+module.exports = router;</code></pre>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">E</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Set Up the Express Server</h3>
+                            <p class="text-slate-700 mb-2">This is the main file that ties everything together: connecting to the database, setting up middleware, and using our routes.</p>
+                            <h4 class="font-semibold mb-1 mt-4"><code>server.js</code></h4>
+                            <pre><code class="language-javascript">require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected...'))
+    .catch(err => console.log(err));
+
+// API Routes
+app.use('/api', require('./routes/api'));
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));</code></pre>
+                            <h4 class="font-semibold mb-1 mt-4"><code>.env</code> (Environment Variables)</h4>
+                            <p class="text-slate-700 mb-2">Create this file in the <code>server</code> root. Get your connection string from <a href="https://www.mongodb.com/cloud/atlas" target="_blank" class="text-indigo-600 hover:underline">MongoDB Atlas</a>.</p>
+                            <pre><code class="language-bash">MONGO_URI=your_mongodb_connection_string_here
+PORT=5001</code></pre>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 3: The HTML Structure -->
+            <!-- Section 3: Frontend Implementation -->
             <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 1: The HTML Structure</h2>
-                <p class="mb-4 text-slate-700">First, create a new folder for your project. Inside it, create a file named <code>index.html</code>. This file will contain the entire structure of our website. We'll use semantic HTML tags like <code>&lt;header&gt;</code>, <code>&lt;section&gt;</code>, and <code>&lt;footer&gt;</code> to make our code readable and accessible.</p>
-                <p class="mb-6 text-slate-700">Copy and paste the code below into your <code>index.html</code> file.</p>
-                <pre><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;Your Name - Web Developer&lt;/title&gt;
-    &lt;link rel="stylesheet" href="style.css"&gt;
-&lt;/head&gt;
-&lt;body&gt;
+                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 2: Frontend Setup (React & Tailwind CSS)</h2>
+                <p class="mb-6 text-slate-700">With the backend ready, let's build the user interface. Go back to the root <code>portfolio-app</code> folder and create the client app.</p>
 
-    &lt;!-- Header and Navigation --&gt;
-    &lt;header&gt;
-        &lt;nav&gt;
-            &lt;div class="logo"&gt;Your Name&lt;/div&gt;
-            &lt;ul&gt;
-                &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
-                &lt;li&gt;&lt;a href="#projects"&gt;Projects&lt;/a&gt;&lt;/li&gt;
-                &lt;li&gt;&lt;a href="#contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
-            &lt;/ul&gt;
-        &lt;/nav&gt;
-    &lt;/header&gt;
+                <div class="space-y-8">
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">A</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Initialize React Project with Vite</h3>
+                            <p class="text-slate-700 mb-2">Vite is a modern, fast build tool for web projects.</p>
+                            <pre><code class="language-bash"># In the root 'portfolio-app' directory
+npm create vite@latest client -- --template react
+cd client
+npm install
+npm install axios tailwindcss postcss autoprefixer
+npx tailwindcss init -p</code></pre>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">B</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Configure Tailwind CSS</h3>
+                            <p class="text-slate-700 mb-2">Update <code>tailwind.config.js</code> and <code>src/index.css</code> to enable Tailwind's styles.</p>
+                             <h4 class="font-semibold mb-1 mt-4"><code>tailwind.config.js</code></h4>
+                            <pre><code class="language-javascript">/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}</code></pre>
+                             <h4 class="font-semibold mb-1 mt-4"><code>src/index.css</code></h4>
+                            <pre><code class="language-css">@tailwind base;
+@tailwind components;
+@tailwind utilities;</code></pre>
+                        </div>
+                    </div>
+                     <div class="flex items-start gap-4">
+                        <div class="step-number">C</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Build the Main App Component</h3>
+                            <p class="text-slate-700 mb-2">This is the core of our frontend. We'll fetch data here and pass it down to other components.</p>
+                            <h4 class="font-semibold mb-1 mt-4"><code>src/App.jsx</code></h4>
+                            <pre><code class="language-javascript">import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-    &lt;main&gt;
-        &lt;!-- Hero Section --&gt;
-        &lt;section id="hero"&gt;
-            &lt;h1&gt;Aspiring Full-Stack Developer&lt;/h1&gt;
-            &lt;p&gt;I build beautiful and functional websites.&lt;/p&gt;
-            &lt;a href="#projects" class="cta-button"&gt;View My Work&lt;/a&gt;
-        &lt;/section&gt;
+// Define the API URL in one place
+const API_URL = 'http://localhost:5001/api';
 
-        &lt;!-- About Section --&gt;
-        &lt;section id="about"&gt;
-            &lt;h2&gt;About Me&lt;/h2&gt;
-            &lt;div class="about-container"&gt;
-                &lt;p&gt;Hello! I'm a passionate developer learning to build amazing things for the web. I have a strong foundation in HTML, CSS, and JavaScript, and I'm currently diving deep into the MERN stack. I love solving problems and creating intuitive, user-friendly experiences.&lt;/p&gt;
-            &lt;/div&gt;
-        &lt;/section&gt;
+function App() {
+    const [projects, setProjects] = useState([]);
 
-        &lt;!-- Projects Section --&gt;
-        &lt;section id="projects"&gt;
-            &lt;h2&gt;My Projects&lt;/h2&gt;
-            &lt;div class="projects-grid"&gt;
-                &lt;!-- Project Card 1 --&gt;
-                &lt;div class="project-card"&gt;
-                    &lt;h3&gt;Project Title 1&lt;/h3&gt;
-                    &lt;p&gt;A brief description of your project will go here. Talk about the technologies used and the problem it solves.&lt;/p&gt;
-                &lt;/div&gt;
-                &lt;!-- Project Card 2 --&gt;
-                &lt;div class="project-card"&gt;
-                    &lt;h3&gt;Project Title 2&lt;/h3&gt;
-                    &lt;p&gt;This is where you'll showcase your future projects from this roadmap!&lt;/p&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/section&gt;
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/projects`);
+                setProjects(response.data);
+            } catch (error) {
+                console.error("Error fetching projects:", error);
+            }
+        };
+        fetchProjects();
+    }, []);
 
-        &lt;!-- Contact Section --&gt;
-        &lt;section id="contact"&gt;
-            &lt;h2&gt;Get In Touch&lt;/h2&gt;
-            &lt;p&gt;I'm always open to discussing new projects or opportunities.&lt;/p&gt;
-            &lt;a href="mailto:your.email@example.com" class="cta-button"&gt;Email Me&lt;/a&gt;
-        &lt;/section&gt;
-    &lt;/main&gt;
+    const handleFormSubmit = async (formData) => {
+        try {
+            await axios.post(`${API_URL}/messages`, formData);
+            alert('Message sent successfully!');
+        } catch (error) {
+            console.error("Error sending message:", error);
+            alert('Failed to send message.');
+        }
+    };
 
-    &lt;!-- Footer --&gt;
-    &lt;footer&gt;
-        &lt;p&gt;&copy; 2025 Your Name. All rights reserved.&lt;/p&gt;
-    &lt;/footer&gt;
+    return (
+        <div className="bg-slate-50 font-sans">
+            {/* Header and other components will go here */}
+            <main className="container mx-auto px-4 py-8">
+                <h2 className="text-4xl font-bold text-center mb-12 text-slate-800">My Projects</h2>
+                <div className="grid md:grid-cols-2 gap-8">
+                    {projects.map(project => (
+                        <ProjectCard key={project._id} project={project} />
+                    ))}
+                </div>
 
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-            </section>
-
-            <!-- Section 4: Styling with CSS -->
-            <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 2: Styling with CSS</h2>
-                <p class="mb-4 text-slate-700">Now, create a second file in the same folder named <code>style.css</code>. This file will control the entire look and feel of your portfolio. We'll use modern CSS properties to create a responsive and professional design.</p>
-                <p class="mb-6 text-slate-700">Copy and paste this code into your <code>style.css</code> file.</p>
-                <pre><code class="language-css">/* Basic Reset & Global Styles */
-body, h1, h2, h3, p, ul {
-    margin: 0;
-    padding: 0;
+                <ContactForm onSubmit={handleFormSubmit} />
+            </main>
+        </div>
+    );
 }
 
-body {
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-    background-color: #f8fafc; /* slate-50 */
-    color: #334155; /* slate-700 */
-}
+const ProjectCard = ({ project }) => (
+    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+        <h3 className="text-2xl font-bold text-indigo-600 mb-2">{project.title}</h3>
+        <p className="text-slate-600 mb-4">{project.description}</p>
+        <div className="flex flex-wrap gap-2 mb-4">
+            {project.technologies.map(tech => (
+                <span key={tech} className="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{tech}</span>
+            ))}
+        </div>
+        <a href={project.link} target="_blank" rel="noopener noreferrer" className="font-semibold text-indigo-600 hover:underline">
+            View Project &rarr;
+        </a>
+    </div>
+);
 
-/* Container to center content */
-header, main, footer {
-    width: 90%;
-    max-width: 900px;
-    margin: 0 auto;
-}
+const ContactForm = ({ onSubmit }) => {
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
-/* Header and Navigation */
-header {
-    padding: 1rem 0;
-}
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(formData);
+        setFormData({ name: '', email: '', message: '' });
+    };
 
-.logo {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: #4f46e5; /* indigo-600 */
-}
+    return (
+        <section id="contact" className="mt-20">
+            <h2 className="text-4xl font-bold text-center mb-12 text-slate-800">Contact Me</h2>
+            <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                <div className="mb-4">
+                    <label htmlFor="name" className="block text-slate-700 font-semibold mb-2">Name</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg" required />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="email" className="block text-slate-700 font-semibold mb-2">Email</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg" required />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="message" className="block text-slate-700 font-semibold mb-2">Message</label>
+                    <textarea name="message" value={formData.message} onChange={handleChange} rows="4" className="w-full px-3 py-2 border rounded-lg" required></textarea>
+                </div>
+                <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
+                    Send Message
+                </button>
+            </form>
+        </section>
+    );
+};
 
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
-}
-
-nav a {
-    text-decoration: none;
-    color: #475569; /* slate-600 */
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-nav a:hover {
-    color: #4f46e5; /* indigo-600 */
-}
-
-/* Hero Section */
-#hero {
-    text-align: center;
-    padding: 6rem 1rem;
-    background-color: #eef2ff; /* indigo-50 */
-    border-radius: 1rem;
-    margin-top: 2rem;
-}
-
-#hero h1 {
-    font-size: 3rem;
-    color: #1e293b; /* slate-800 */
-    margin-bottom: 0.5rem;
-}
-
-#hero p {
-    font-size: 1.25rem;
-    color: #475569; /* slate-600 */
-    margin-bottom: 2rem;
-}
-
-.cta-button {
-    display: inline-block;
-    background-color: #4f46e5; /* indigo-600 */
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
-}
-
-.cta-button:hover {
-    background-color: #4338ca; /* indigo-700 */
-}
-
-/* General Section Styling */
-section {
-    padding: 4rem 0;
-}
-
-section h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #1e293b; /* slate-800 */
-}
-
-/* About Section */
-.about-container {
-    max-width: 700px;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-/* Projects Section */
-.projects-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
-
-.project-card {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0; /* slate-200 */
-}
-
-.project-card h3 {
-    font-size: 1.5rem;
-    color: #4f46e5; /* indigo-600 */
-    margin-bottom: 0.5rem;
-}
-
-/* Contact Section */
-#contact {
-    text-align: center;
-}
-
-#contact p {
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 2rem 0;
-    margin-top: 2rem;
-    border-top: 1px solid #e2e8f0; /* slate-200 */
-    color: #64748b; /* slate-500 */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    #hero h1 { font-size: 2.5rem; }
-    .projects-grid { grid-template-columns: 1fr; }
-    nav { flex-direction: column; gap: 1rem; }
-}
+export default App;
 </code></pre>
+                        </div>
+                    </div>
+                </div>
             </section>
-
-            <!-- Section 5: Version Control and Deployment -->
+            
+            <!-- Section 4: Running and Deployment -->
             <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 3: Version Control & Deployment</h2>
-                <p class="mb-6 text-slate-700">Now that you've built your site, it's time to put it on the internet for everyone to see. We'll use Git and GitHub to save our code and Netlify to host it for free.</p>
+                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 3: Running & Deployment</h2>
+                <p class="mb-6 text-slate-700">You've built both the frontend and backend. Now let's run them together and get them on the internet.</p>
                 
                 <div class="space-y-8">
                     <div class="flex items-start gap-4">
-                        <div class="step-number">1</div>
+                        <div class="step-number">A</div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-1">Initialize Git</h3>
-                            <p class="text-slate-700">Open your terminal or command prompt, navigate to your project folder, and run this command to turn it into a Git repository.</p>
-                            <pre><code class="language-bash">git init</code></pre>
+                            <h3 class="text-xl font-semibold mb-1">Running Locally</h3>
+                            <p class="text-slate-700 mb-2">You'll need two separate terminal windows.</p>
+                            <h4 class="font-semibold mb-1 mt-4">Terminal 1: Start the Backend</h4>
+                            <pre><code class="language-bash">cd server
+node server.js</code></pre>
+                            <h4 class="font-semibold mb-1 mt-4">Terminal 2: Start the Frontend</h4>
+                            <pre><code class="language-bash">cd client
+npm run dev</code></pre>
+                            <p class="text-slate-700 mt-2">Your React app should now be running (usually on <code>http://localhost:5173</code>) and successfully fetching data from your backend server (running on <code>http://localhost:5001</code>).</p>
                         </div>
                     </div>
-
                     <div class="flex items-start gap-4">
-                        <div class="step-number">2</div>
+                        <div class="step-number">B</div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-1">Commit Your Code</h3>
-                            <p class="text-slate-700">Add your files to Git and make your first "commit," which is like a snapshot of your code.</p>
-                            <pre><code class="language-bash">git add .
-git commit -m "Initial commit: Create portfolio website"</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">3</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Push to GitHub</h3>
-                            <p class="text-slate-700">Go to <a href="https://github.com" target="_blank" class="text-indigo-600 hover:underline">GitHub</a>, create a new repository (don't initialize it with a README). GitHub will give you commands to connect your local repository and "push" your code to it. They will look like this:</p>
-                            <pre><code class="language-bash">git remote add origin https://github.com/your-username/your-repo-name.git
-git branch -M main
-git push -u origin main</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">4</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Deploy with Netlify</h3>
-                            <p class="text-slate-700">This is the easiest part. Go to <a href="https://www.netlify.com/" target="_blank" class="text-indigo-600 hover:underline">Netlify</a> and sign up with your GitHub account. Find the option to deploy a new site from Git, connect your GitHub, and select the portfolio repository you just created. Netlify will automatically build and deploy your site to a live URL!</p>
+                            <h3 class="text-xl font-semibold mb-1">Deployment Strategy</h3>
+                            <p class="text-slate-700 mb-2">We will deploy the frontend and backend separately. This is a standard practice for full-stack applications.</p>
+                            <ul class="list-disc list-inside ml-4 text-slate-700 space-y-2">
+                                <li><strong>Backend (Render):</strong> Push your <code>server</code> folder to a GitHub repository. Sign up for <a href="https://render.com/" class="text-indigo-600 hover:underline">Render</a>, connect your GitHub, and create a new "Web Service". Point it to your backend repository. Render will detect it's a Node.js app. You must add your <code>MONGO_URI</code> as an environment variable in the Render dashboard.</li>
+                                <li><strong>Frontend (Vercel):</strong> Push your <code>client</code> folder to another GitHub repository. Sign up for <a href="https://vercel.com/" class="text-indigo-600 hover:underline">Vercel</a>, connect your GitHub, and import the client repository. Vercel will auto-detect it's a Vite/React app and deploy it.</li>
+                            </ul>
+                            <div class="pro-tip mt-4">
+                                <p><strong>Crucial Final Step:</strong> Once your backend is live on Render, it will have a public URL (e.g., <code>https://my-portfolio-api.onrender.com</code>). You must update the <code>API_URL</code> variable in your frontend <code>App.jsx</code> file to this new URL and redeploy the frontend. This tells your live frontend where to find your live backend.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
 </body>
