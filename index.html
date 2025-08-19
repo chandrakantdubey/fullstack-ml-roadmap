@@ -106,6 +106,7 @@
                 project: {
                     title: "AI Content Summarizer & Keyword Extractor SaaS",
                     description: "A web service where users submit a URL or text to get an AI-generated summary and keywords, with results persisted in a database. Monetizable via a tiered API access model.",
+                    link: "./p1.html"
                 },
                 tech: ["FastAPI", "SQLModel", "PostgreSQL", "OpenAI API", "Docker"],
                 focus: [5, 1, 3, 3, 2], // BE, FE, AI, DSA, SysDesign
@@ -418,7 +419,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                         <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col">
                             <h3 class="text-xl font-semibold mb-3 text-slate-800">Weekly Project</h3>
-                            <p class="text-lg font-bold text-amber-600 mb-2">${weekData.project.title}</p>
+                            <p class="text-lg font-bold text-amber-600 mb-2"><a href="${weekData.project.link}">${weekData.project.title}</a></p>
                             <p class="text-slate-600 flex-grow">${weekData.project.description}</p>
                             <button onclick="openModal(${currentWeek})" class="mt-4 w-full bg-slate-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors">
                                 View Daily Plan
