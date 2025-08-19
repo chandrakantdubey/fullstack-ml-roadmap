@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project 1 Guide: Full-Stack MERN Portfolio</title>
+    <title>Project 1 Guide: AI Content Summarizer & Keyword Extractor SaaS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,9 +26,19 @@
         }
         code {
             font-family: 'Source Code Pro', monospace;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.25rem;
+        }
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
         }
         .step-number {
-            background-color: #4f46e5; /* indigo-600 */
+            background-color: #f59e0b; /* amber-500 */
             color: white;
             border-radius: 9999px;
             width: 2.5rem;
@@ -41,8 +51,8 @@
             flex-shrink: 0;
         }
         .pro-tip {
-            background-color: #eef2ff; /* indigo-50 */
-            border-left: 4px solid #4f46e5; /* indigo-600 */
+            background-color: #fffbeb; /* amber-50 */
+            border-left: 4px solid #f59e0b; /* amber-500 */
             padding: 1rem;
             border-radius: 0.5rem;
         }
@@ -51,380 +61,172 @@
 <body class="bg-slate-50 text-slate-800">
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 1: Full-Stack MERN Portfolio</h1>
-            <p class="text-lg text-slate-600">A detailed guide to building a dynamic portfolio with React, Node.js, Express, and MongoDB.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-2">Project 1: AI Content Summarizer SaaS</h1>
+            <p class="text-lg text-slate-600">An in-depth implementation guide for the senior engineer roadmap.</p>
         </header>
 
         <main class="space-y-16">
-            <!-- Section 1: Introduction & Architecture -->
+            <!-- Section 1: Architecture & Data Flow -->
             <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Introduction & Architecture</h2>
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Architecture & Data Flow</h2>
                 <div class="space-y-4 text-slate-700 mb-8">
-                    <p><strong>Project Goal:</strong> To build a dynamic, database-driven portfolio. Instead of hard-coding your projects in HTML, you'll store them in a MongoDB database. A Node.js backend will serve this data via a REST API, and a React frontend will fetch and display it. The site will also feature a contact form that saves messages directly to your database.</p>
-                    <p><strong>Technologies Used:</strong> This is a full MERN stack project.</p>
+                    <p><strong>Project Goal:</strong> To build a high-performance backend service that accepts text or a URL, uses an external AI service to generate a summary and keywords, and persists the results in a relational database. The entire application will be containerized for reproducibility.</p>
+                    <p><strong>Core Technologies:</strong></p>
                     <ul class="list-disc list-inside ml-4">
-                        <li><strong>MongoDB:</strong> A NoSQL database to store project and contact information.</li>
-                        <li><strong>Express.js:</strong> A Node.js framework to build our backend REST API.</li>
-                        <li><strong>React:</strong> A JavaScript library to build our dynamic frontend user interface.</li>
-                        <li><strong>Node.js:</strong> The JavaScript runtime environment for our server.</li>
+                        <li><strong>Backend:</strong> Python with FastAPI</li>
+                        <li><strong>Database:</strong> PostgreSQL</li>
+                        <li><strong>ORM:</strong> SQLModel</li>
+                        <li><strong>AI Service:</strong> OpenAI API</li>
+                        <li><strong>Containerization:</strong> Docker & Docker Compose</li>
                     </ul>
                 </div>
 
-                <h3 class="text-2xl font-bold mb-4">Application Flow Diagram</h3>
-                <p class="mb-4 text-slate-700">This diagram illustrates how the different parts of our application will interact.</p>
+                <h3 class="text-2xl font-bold mb-4">System Flow Diagram</h3>
+                <p class="mb-4 text-slate-700">This diagram illustrates the lifecycle of a single API request from the client to the database and back.</p>
                 <pre><code class="language-text">
-  User's Browser                Backend Server (Node/Express)         Database (MongoDB)
-  +----------------+            +-----------------------------+       +------------------+
-  |                |            |                             |       |                  |
-  |  React App     | --(1)----&gt; | GET /api/projects           | --(2)-&gt; |  Projects        |
-  | (Frontend)     | &lt;-(4)----  | (Fetch all projects)        | &lt;-(3)-  |  Collection      |
-  |                |            |                             |       |                  |
-  +----------------+            +-----------------------------+       +------------------+
-        |  ^
-        |  | User interacts
-        v  |
-  +----------------+            +-----------------------------+       +------------------+
-  |                |            |                             |       |                  |
-  |  Contact Form  | --(5)----&gt; | POST /api/messages          | --(6)-&gt; |  Messages        |
-  |                | &lt;-(8)----  | (Save new message)          | &lt;-(7)-  |  Collection      |
-  |                |            |                             |       |                  |
-  +----------------+            +-----------------------------+       +------------------+
-
-(1) Frontend requests project data on page load.
-(2) Server queries the database for all projects.
-(3) Database returns the project documents.
-(4) Server sends the project data back to the frontend as JSON.
-(5) User submits the contact form; frontend sends data to the server.
-(6) Server validates and saves the new message to the database.
-(7) Database confirms the save operation.
-(8) Server sends a success response back to the frontend.
+  Client (e.g., Postman, Frontend)
+           |
+           | (1) POST /summarize
+           |     { "text": "..." }
+           v
++------------------------------------+
+|   FastAPI Application (Container)  |
+|------------------------------------|
+|   (2) Pydantic Validation          |
+|       - Validates incoming data    |
+|           |                        |
+|           v                        |
+|   (3) Dependency Injection         |
+|       - Provides DB Session        |
+|           |                        |
+|           v                        |
+|   (4) AI Service Logic             | ----(5)----> [ OpenAI API ]
+|       - Calls OpenAI               | <---(6)----- (Summary/Keywords)
+|           |                        |
+|           v                        |
+|   (7) Database Operation           | ----(8)----> +---------------------+
+|       - Saves request & result     | <---(9)----- | PostgreSQL Database |
+|           |                        |              | (Container)         |
+|           v                        |              +---------------------+
+|   (10) Pydantic Serialization      |
+|        - Formats response          |
+|           |                        |
+|           v                        |
++------------------------------------+
+           |
+           | (11) 200 OK Response
+           |      { "summary": "...", "keywords": [...] }
+           v
+  Client
                 </code></pre>
             </section>
 
-            <!-- Section 2: Backend Implementation -->
+            <!-- Section 2: Backend Implementation Strategy -->
             <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 1: Backend Setup (Node.js, Express, MongoDB)</h2>
-                <p class="mb-6 text-slate-700">Let's start by building the API that will serve our data. Create a new folder for your project called <code>portfolio-app</code>, and inside it, create a folder named <code>server</code>.</p>
-
+                <h2 class="text-3xl font-bold border-b-2 border-amber-200 pb-2 mb-6">Backend Implementation Strategy (FastAPI)</h2>
                 <div class="space-y-8">
                     <div class="flex items-start gap-4">
-                        <div class="step-number">A</div>
+                        <div class="step-number">1</div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-1">Initialize Node.js Project</h3>
-                            <p class="text-slate-700 mb-2">Navigate into the <code>server</code> directory in your terminal and run:</p>
-                            <pre><code class="language-bash">cd server
-npm init -y
-npm install express mongoose cors dotenv</code></pre>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">B</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Create the Server File Structure</h3>
-                            <p class="text-slate-700 mb-2">Create the following folders and files inside your <code>server</code> directory. This structure keeps our code organized and scalable.</p>
-                            <pre><code class="language-text">
-/server
-|-- models/
-|   |-- projectModel.js
-|   `-- messageModel.js
-|-- routes/
-|   |-- api.js
-|-- .env
-`-- server.js
-                            </code></pre>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">C</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Define Database Models</h3>
-                            <p class="text-slate-700 mb-2">Mongoose uses schemas to define the structure of documents in a MongoDB collection.</p>
-                            <h4 class="font-semibold mb-1 mt-4"><code>models/projectModel.js</code></h4>
-                            <pre><code class="language-javascript">const mongoose = require('mongoose');
-const projectSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    technologies: [String],
-    link: { type: String, required: true },
-});
-module.exports = mongoose.model('Project', projectSchema);</code></pre>
-                            <h4 class="font-semibold mb-1 mt-4"><code>models/messageModel.js</code></h4>
-                            <pre><code class="language-javascript">const mongoose = require('mongoose');
-const messageSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    message: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-});
-module.exports = mongoose.model('Message', messageSchema);</code></pre>
-                        </div>
-                    </div>
-                     <div class="flex items-start gap-4">
-                        <div class="step-number">D</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Build the API Routes</h3>
-                            <p class="text-slate-700 mb-2">These routes define the endpoints our frontend will communicate with.</p>
-                            <h4 class="font-semibold mb-1 mt-4"><code>routes/api.js</code></h4>
-                            <pre><code class="language-javascript">const express = require('express');
-const router = express.Router();
-const Project = require('../models/projectModel');
-const Message = require('../models/messageModel');
+                            <h3 class="text-xl font-semibold mb-1">Data Modeling with Pydantic & SQLModel</h3>
+                            <p class="text-slate-700">The key is to define your data structures once and reuse them for API validation, serialization, and database schema definition. SQLModel, built on Pydantic, makes this seamless.</p>
+                            <p class="text-slate-700 mt-2">You'll create a base model with shared fields, then extend it for different contexts (API input, DB storage, API output).</p>
+                            <pre><code class="language-python"># Snippet: sql_models.py
+from typing import List, Optional
+from sqlmodel import Field, SQLModel
 
-// GET all projects
-router.get('/projects', async (req, res) => {
-    try {
-        const projects = await Project.find();
-        res.json(projects);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+class SummaryRequest(SQLModel):
+    text: str
+    # ... other input fields
 
-// POST a new message
-router.post('/messages', async (req, res) => {
-    const message = new Message({
-        name: req.body.name,
-        email: req.body.email,
-        message: req.body.message,
-    });
-    try {
-        const newMessage = await message.save();
-        res.status(201).json(newMessage);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
-
-module.exports = router;</code></pre>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">E</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Set Up the Express Server</h3>
-                            <p class="text-slate-700 mb-2">This is the main file that ties everything together: connecting to the database, setting up middleware, and using our routes.</p>
-                            <h4 class="font-semibold mb-1 mt-4"><code>server.js</code></h4>
-                            <pre><code class="language-javascript">require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Database Connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected...'))
-    .catch(err => console.log(err));
-
-// API Routes
-app.use('/api', require('./routes/api'));
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));</code></pre>
-                            <h4 class="font-semibold mb-1 mt-4"><code>.env</code> (Environment Variables)</h4>
-                            <p class="text-slate-700 mb-2">Create this file in the <code>server</code> root. Get your connection string from <a href="https://www.mongodb.com/cloud/atlas" target="_blank" class="text-indigo-600 hover:underline">MongoDB Atlas</a>.</p>
-                            <pre><code class="language-bash">MONGO_URI=your_mongodb_connection_string_here
-PORT=5001</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 3: Frontend Implementation -->
-            <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 2: Frontend Setup (React & Tailwind CSS)</h2>
-                <p class="mb-6 text-slate-700">With the backend ready, let's build the user interface. Go back to the root <code>portfolio-app</code> folder and create the client app.</p>
-
-                <div class="space-y-8">
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">A</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Initialize React Project with Vite</h3>
-                            <p class="text-slate-700 mb-2">Vite is a modern, fast build tool for web projects.</p>
-                            <pre><code class="language-bash"># In the root 'portfolio-app' directory
-npm create vite@latest client -- --template react
-cd client
-npm install
-npm install axios tailwindcss postcss autoprefixer
-npx tailwindcss init -p</code></pre>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4">
-                        <div class="step-number">B</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Configure Tailwind CSS</h3>
-                            <p class="text-slate-700 mb-2">Update <code>tailwind.config.js</code> and <code>src/index.css</code> to enable Tailwind's styles.</p>
-                             <h4 class="font-semibold mb-1 mt-4"><code>tailwind.config.js</code></h4>
-                            <pre><code class="language-javascript">/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}</code></pre>
-                             <h4 class="font-semibold mb-1 mt-4"><code>src/index.css</code></h4>
-                            <pre><code class="language-css">@tailwind base;
-@tailwind components;
-@tailwind utilities;</code></pre>
-                        </div>
-                    </div>
-                     <div class="flex items-start gap-4">
-                        <div class="step-number">C</div>
-                        <div>
-                            <h3 class="text-xl font-semibold mb-1">Build the Main App Component</h3>
-                            <p class="text-slate-700 mb-2">This is the core of our frontend. We'll fetch data here and pass it down to other components.</p>
-                            <h4 class="font-semibold mb-1 mt-4"><code>src/App.jsx</code></h4>
-                            <pre><code class="language-javascript">import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-// Define the API URL in one place
-const API_URL = 'http://localhost:5001/api';
-
-function App() {
-    const [projects, setProjects] = useState([]);
-
-    useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/projects`);
-                setProjects(response.data);
-            } catch (error) {
-                console.error("Error fetching projects:", error);
-            }
-        };
-        fetchProjects();
-    }, []);
-
-    const handleFormSubmit = async (formData) => {
-        try {
-            await axios.post(`${API_URL}/messages`, formData);
-            alert('Message sent successfully!');
-        } catch (error) {
-            console.error("Error sending message:", error);
-            alert('Failed to send message.');
-        }
-    };
-
-    return (
-        <div className="bg-slate-50 font-sans">
-            {/* Header and other components will go here */}
-            <main className="container mx-auto px-4 py-8">
-                <h2 className="text-4xl font-bold text-center mb-12 text-slate-800">My Projects</h2>
-                <div className="grid md:grid-cols-2 gap-8">
-                    {projects.map(project => (
-                        <ProjectCard key={project._id} project={project} />
-                    ))}
-                </div>
-
-                <ContactForm onSubmit={handleFormSubmit} />
-            </main>
-        </div>
-    );
-}
-
-const ProjectCard = ({ project }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
-        <h3 className="text-2xl font-bold text-indigo-600 mb-2">{project.title}</h3>
-        <p className="text-slate-600 mb-4">{project.description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-            {project.technologies.map(tech => (
-                <span key={tech} className="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{tech}</span>
-            ))}
-        </div>
-        <a href={project.link} target="_blank" rel="noopener noreferrer" className="font-semibold text-indigo-600 hover:underline">
-            View Project &rarr;
-        </a>
-    </div>
-);
-
-const ContactForm = ({ onSubmit }) => {
-    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit(formData);
-        setFormData({ name: '', email: '', message: '' });
-    };
-
-    return (
-        <section id="contact" className="mt-20">
-            <h2 className="text-4xl font-bold text-center mb-12 text-slate-800">Contact Me</h2>
-            <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                <div className="mb-4">
-                    <label htmlFor="name" className="block text-slate-700 font-semibold mb-2">Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg" required />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-slate-700 font-semibold mb-2">Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-3 py-2 border rounded-lg" required />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="message" className="block text-slate-700 font-semibold mb-2">Message</label>
-                    <textarea name="message" value={formData.message} onChange={handleChange} rows="4" className="w-full px-3 py-2 border rounded-lg" required></textarea>
-                </div>
-                <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">
-                    Send Message
-                </button>
-            </form>
-        </section>
-    );
-};
-
-export default App;
+class SummaryResult(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    original_text: str
+    summary: str
+    keywords: List[str] = Field(..., sa_column=...) # Use JSON type for list
 </code></pre>
                         </div>
                     </div>
-                </div>
-            </section>
-            
-            <!-- Section 4: Running and Deployment -->
-            <section>
-                <h2 class="text-3xl font-bold border-b-2 border-indigo-200 pb-2 mb-6">Step 3: Running & Deployment</h2>
-                <p class="mb-6 text-slate-700">You've built both the frontend and backend. Now let's run them together and get them on the internet.</p>
-                
-                <div class="space-y-8">
+
                     <div class="flex items-start gap-4">
-                        <div class="step-number">A</div>
+                        <div class="step-number">2</div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-1">Running Locally</h3>
-                            <p class="text-slate-700 mb-2">You'll need two separate terminal windows.</p>
-                            <h4 class="font-semibold mb-1 mt-4">Terminal 1: Start the Backend</h4>
-                            <pre><code class="language-bash">cd server
-node server.js</code></pre>
-                            <h4 class="font-semibold mb-1 mt-4">Terminal 2: Start the Frontend</h4>
-                            <pre><code class="language-bash">cd client
-npm run dev</code></pre>
-                            <p class="text-slate-700 mt-2">Your React app should now be running (usually on <code>http://localhost:5173</code>) and successfully fetching data from your backend server (running on <code>http://localhost:5001</code>).</p>
+                            <h3 class="text-xl font-semibold mb-1">Managing Database Sessions with Dependency Injection</h3>
+                            <p class="text-slate-700">Avoid managing database connections directly in your endpoint logic. Use FastAPI's `Depends` system to create a clean, reusable dependency that provides a database session and ensures it's closed after the request is finished, even if an error occurs.</p>
+                            <pre><code class="language-python"># Snippet: database.py
+from sqlmodel import Session, create_engine
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+# Snippet: main.py
+from fastapi import Depends
+from sqlmodel import Session
+
+@app.post("/summarize")
+def create_summary(..., session: Session = Depends(get_session)):
+    # session is now available here
+    ...
+</code></pre>
                         </div>
                     </div>
+
                     <div class="flex items-start gap-4">
-                        <div class="step-number">B</div>
+                        <div class="step-number">3</div>
                         <div>
-                            <h3 class="text-xl font-semibold mb-1">Deployment Strategy</h3>
-                            <p class="text-slate-700 mb-2">We will deploy the frontend and backend separately. This is a standard practice for full-stack applications.</p>
-                            <ul class="list-disc list-inside ml-4 text-slate-700 space-y-2">
-                                <li><strong>Backend (Render):</strong> Push your <code>server</code> folder to a GitHub repository. Sign up for <a href="https://render.com/" class="text-indigo-600 hover:underline">Render</a>, connect your GitHub, and create a new "Web Service". Point it to your backend repository. Render will detect it's a Node.js app. You must add your <code>MONGO_URI</code> as an environment variable in the Render dashboard.</li>
-                                <li><strong>Frontend (Vercel):</strong> Push your <code>client</code> folder to another GitHub repository. Sign up for <a href="https://vercel.com/" class="text-indigo-600 hover:underline">Vercel</a>, connect your GitHub, and import the client repository. Vercel will auto-detect it's a Vite/React app and deploy it.</li>
-                            </ul>
-                            <div class="pro-tip mt-4">
-                                <p><strong>Crucial Final Step:</strong> Once your backend is live on Render, it will have a public URL (e.g., <code>https://my-portfolio-api.onrender.com</code>). You must update the <code>API_URL</code> variable in your frontend <code>App.jsx</code> file to this new URL and redeploy the frontend. This tells your live frontend where to find your live backend.</p>
+                            <h3 class="text-xl font-semibold mb-1">Integrating the AI Service Asynchronously</h3>
+                            <p class="text-slate-700">External API calls are I/O-bound and perfect for `async/await`. Create a dedicated service module to handle the interaction with the OpenAI API. This isolates the logic and makes it testable. Use environment variables (`os.getenv()`) to manage your API key securely—never hard-code it.</p>
+                            <pre><code class="language-python"># Snippet: ai_service.py
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+async def get_ai_summary(text: str):
+    response = await openai.Completion.acreate(...) # Use async method
+    return response.choices[0].text.strip()
+</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="step-number">4</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Structuring the Main Endpoint Logic</h3>
+                            <p class="text-slate-700">The main endpoint should act as a coordinator. It validates input, gets a DB session, calls the AI service, saves the result, and returns the response. This keeps the endpoint clean and readable.</p>
+                            <pre><code class="language-python"># Snippet: main.py
+@app.post("/summarize", response_model=SummaryResult)
+async def create_summary(request: SummaryRequest, ...):
+    # 1. Call the AI service
+    summary_text = await ai_service.get_ai_summary(request.text)
+    
+    # 2. Create a database object
+    db_summary = SummaryResult(...)
+    
+    # 3. Save to database
+    session.add(db_summary)
+    session.commit()
+    session.refresh(db_summary)
+    
+    # 4. Return the result
+    return db_summary
+</code></pre>
+                        </div>
+                    </div>
+                     <div class="flex items-start gap-4">
+                        <div class="step-number">5</div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Containerizing with Docker Compose</h3>
+                            <p class="text-slate-700">For a robust development and deployment workflow, use Docker Compose to manage the FastAPI application and the PostgreSQL database as connected services. This ensures your environment is consistent everywhere.</p>
+                             <div class="pro-tip mt-4">
+                                <p><strong>Key `docker-compose.yml` concepts:</strong> Define two `services`: one for your `api` (built from your `Dockerfile`) and one for the `db` (using the official `postgres` image). Use `volumes` to persist database data and `environment` to pass connection details and API keys securely.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
         </main>
     </div>
 </body>
