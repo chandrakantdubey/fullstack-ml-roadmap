@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Learning Resources</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #4f46e5;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --accent: #ec4899;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-box {
+            margin: 1.5rem auto;
+            max-width: 600px;
+            display: flex;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            background-color: var(--dark);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .category-btn {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .resources-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 3rem;
+        }
+        
+        .resource-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .card-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .resource-type {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: var(--primary-dark);
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .resource-list {
+            list-style-type: none;
+        }
+        
+        .resource-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 5px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .resource-list li:hover {
+            border-left-color: var(--primary);
+            padding-left: 10px;
+        }
+        
+        .resource-list a {
+            color: var(--dark);
+            text-decoration: none;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .resource-list a:hover {
+            color: var(--primary);
+        }
+        
+        .resource-list i {
+            margin-right: 10px;
+            color: var(--primary);
+            margin-top: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            background-color: var(--dark);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .resources-container {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+        }
+        
+        .highlight {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+        
+        .linux-badge {
+            display: inline-block;
+            background-color: #1e293b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .responsive-info {
+            background-color: #e0f2fe;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .responsive-info h3 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Developer Learning Resources</h1>
+            <p>Comprehensive collection of free, high-quality learning resources for software development</p>
+            
+            <div class="search-box">
+                <input type="text" placeholder="Search resources...">
+                <button><i class="fas fa-search"></i> Search</button>
+            </div>
+            
+            <div class="categories">
+                <button class="category-btn active">All</button>
+                <button class="category-btn">Machine Learning</button>
+                <button class="category-btn">Data Structures</button>
+                <button class="category-btn">Frontend</button>
+                <button class="category-btn">Backend</button>
+                <button class="category-btn">Databases</button>
+                <button class="category-btn">System Design</button>
+                <button class="category-btn">Security</button>
+                <button class="category-btn">DevOps</button>
+                <button class="category-btn">Linux</button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="responsive-info">
+            <h3><i class="fas fa-mobile-alt"></i> Responsive Design</h3>
+            <p>This page uses responsive web design principles to ensure optimal viewing experience across all devices - from mobile phones to desktop computers. The layout adapts using CSS media queries, flexible grids, and responsive images :cite[2]:cite[4].</p>
+        </div>
+        
+        <div class="highlight">
+            <h3><i class="fas fa-lightbulb"></i> Pro Tip</h3>
+            <p>All resources listed here are completely free. Many offer optional paid certificates, but the learning content is accessible at no cost. Use the search and category filters to find resources specific to your needs.</p>
+        </div>
+        
+        <div class="resources-container">
+            <!-- Machine Learning -->
+            <div class="resource-card" data-category="Machine Learning">
+                <div class="card-header">
+                    <h3>Machine Learning</h3>
+                    <p>From beginner to advanced, including math, frameworks, applied ML, and MLOps</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Courses & MOOCs</span>
+                    <ul class="resource-list">
+                        <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank"><i class="fas fa-external-link-alt"></i> Google's Machine Learning Crash Course</a></li>
+                        <li><a href="https://www.edx.org/course/cs50s-introduction-to-artificial-intelligence-with-python" target="_blank"><i class="fas fa-external-link-alt"></i> HarvardX CS50's Introduction to AI with Python</a></li>
+                        <li><a href="https://www.coursera.org/specializations/deep-learning" target="_blank"><i class="fas fa-external-link-alt"></i> deeplearning.ai Specializations (Coursera)</a></li>
+                        <li><a href="https://www.kaggle.com/learn" target="_blank"><i class="fas fa-external-link-alt"></i> Kaggle Learn</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/josephmisiti/awesome-machine-learning" target="_blank"><i class="fab fa-github"></i> Awesome Machine Learning</a></li>
+                        <li><a href="https://github.com/ageron/handson-ml" target="_blank"><i class="fab fa-github"></i> Hands-On Machine Learning</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Interactive Platforms</span>
+                    <ul class="resource-list">
+                        <li><a href="https://www.kaggle.com/" target="_blank"><i class="fas fa-laptop-code"></i> Kaggle</a></li>
+                        <li><a href="https://leetcode.com/tag/machine-learning/" target="_blank"><i class="fas fa-laptop-code"></i> LeetCode ML Challenges</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Books & Papers</span>
+                    <ul class="resource-list">
+                        <li><a href="https://www.deeplearningbook.org/" target="_blank"><i class="fas fa-book"></i> Deep Learning Book (Ian Goodfellow)</a></li>
+                        <li><a href="https://arxiv.org/list/stat.ML/recent" target="_blank"><i class="fas fa-file-alt"></i> ArXiv Machine Learning Papers</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Data Structures & Algorithms -->
+            <div class="resource-card" data-category="Data Structures">
+                <div class="card-header">
+                    <h3>Data Structures & Algorithms</h3>
+                    <p>Intermediate to advanced level</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Courses & MOOCs</span>
+                    <ul class="resource-list">
+                        <li><a href="https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-851-advanced-data-structures-spring-2012/" target="_blank"><i class="fas fa-external-link-alt"></i> Advanced Data Structures (MIT OpenCourseWare)</a></li>
+                        <li><a href="https://www.coursera.org/specializations/algorithms" target="_blank"><i class="fas fa-external-link-alt"></i> Algorithms Specialization (Stanford University)</a></li>
+                        <li><a href="https://www.geeksforgeeks.org/courses/data-structures-and-algorithms-self-paced" target="_blank"><i class="fas fa-external-link-alt"></i> DSA Self-Paced (GeeksforGeeks)</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/TheAlgorithms" target="_blank"><i class="fab fa-github"></i> The Algorithms</a></li>
+                        <li><a href="https://github.com/trekhleb/javascript-algorithms" target="_blank"><i class="fab fa-github"></i> JavaScript Algorithms</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Interactive Platforms</span>
+                    <ul class="resource-list">
+                        <li><a href="https://leetcode.com/" target="_blank"><i class="fas fa-laptop-code"></i> LeetCode</a></li>
+                        <li><a href="https://www.algoexpert.io/" target="_blank"><i class="fas fa-laptop-code"></i> AlgoExpert</a></li>
+                        <li><a href="https://www.hackerrank.com/domains/tutorials/10-days-of-javascript" target="_blank"><i class="fas fa-laptop-code"></i> HackerRank</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Books</span>
+                    <ul class="resource-list">
+                        <li><a href="https://edutechlearners.com/download/Introduction_to_algorithms-3rd%20Edition.pdf" target="_blank"><i class="fas fa-book"></i> Introduction to Algorithms (CLRS)</a></li>
+                        <li><a href="http://www.crackingthecodinginterview.com/" target="_blank"><i class="fas fa-book"></i> Cracking the Coding Interview</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Frontend Development -->
+            <div class="resource-card" data-category="Frontend">
+                <div class="card-header">
+                    <h3>Frontend Development</h3>
+                    <p>React ecosystem and advanced topics</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Documentation</span>
+                    <ul class="resource-list">
+                        <li><a href="https://beta.reactjs.org/" target="_blank"><i class="fas fa-book"></i> React Beta Documentation</a></li>
+                        <li><a href="https://nextjs.org/docs" target="_blank"><i class="fas fa-book"></i> Next.js Docs</a></li>
+                        <li><a href="https://reactrouter.com/en/main" target="_blank"><i class="fas fa-book"></i> React Router Docs</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Courses & Tutorials</span>
+                    <ul class="resource-list">
+                        <li><a href="https://scrimba.com/learn/learnreact" target="_blank"><i class="fas fa-external-link-alt"></i> Scrimba's Free React Course</a></li>
+                        <li><a href="https://egghead.io/courses/the-beginner-s-guide-to-react" target="_blank"><i class="fas fa-external-link-alt"></i> egghead.io React Courses</a></li>
+                        <li><a href="https://www.freecodecamp.org/learn/front-end-development-libraries/" target="_blank"><i class="fas fa-external-link-alt"></i> FreeCodeCamp Frontend Libraries</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/enaqx/awesome-react" target="_blank"><i class="fab fa-github"></i> Awesome React</a></li>
+                        <li><a href="https://github.com/tannerlinsley/react-query" target="_blank"><i class="fab fa-github"></i> React Query Examples</a></li>
+                        <li><a href="https://github.com/awesome-redux" target="_blank"><i class="fab fa-github"></i> Awesome Redux</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools & Libraries</span>
+                    <ul class="resource-list">
+                        <li><a href="https://react-hook-form.com/" target="_blank"><i class="fas fa-tools"></i> React Hook Form</a></li>
+                        <li><a href="https://github.com/colinhacks/zod" target="_blank"><i class="fas fa-tools"></i> Zod Validation</a></li>
+                        <li><a href="https://www.framer.com/motion/" target="_blank"><i class="fas fa-tools"></i> Framer Motion</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Backend Development -->
+            <div class="resource-card" data-category="Backend">
+                <div class="card-header">
+                    <h3>Backend Development</h3>
+                    <p>Python (FastAPI) and JS/TS (Node.js, Express, Bun)</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Documentation</span>
+                    <ul class="resource-list">
+                        <li><a href="https://fastapi.tiangolo.com/" target="_blank"><i class="fas fa-book"></i> FastAPI Docs</a></li>
+                        <li><a href="https://nodejs.org/en/docs/" target="_blank"><i class="fas fa-book"></i> Node.js Docs</a></li>
+                        <li><a href="https://expressjs.com/" target="_blank"><i class="fas fa-book"></i> Express.js Docs</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Courses & Tutorials</span>
+                    <ul class="resource-list">
+                        <li><a href="https://fastapi.tiangolo.com/tutorial/" target="_blank"><i class="fas fa-external-link-alt"></i> FastAPI Tutorials</a></li>
+                        <li><a href="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs" target="_blank"><i class="fas fa-external-link-alt"></i> Express.js Guide (MDN)</a></li>
+                        <li><a href="https://www.freecodecamp.org/learn/back-end-development-and-apis/" target="_blank"><i class="fas fa-external-link-alt"></i> FreeCodeCamp Backend Development</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/mjhea0/awesome-fastapi" target="_blank"><i class="fab fa-github"></i> Awesome FastAPI</a></li>
+                        <li><a href="https://github.com/sindresorhus/awesome-nodejs" target="_blank"><i class="fab fa-github"></i> Awesome Node.js</a></li>
+                        <li><a href="https://github.com/goldbergyoni/nodebestpractices" target="_blank"><i class="fab fa-github"></i> Node.js Best Practices</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools & Libraries</span>
+                    <ul class="resource-list">
+                        <li><a href="https://trpc.io/" target="_blank"><i class="fas fa-tools"></i> tRPC</a></li>
+                        <li><a href="https://www.apollographql.com/docs/apollo-server/" target="_blank"><i class="fas fa-tools"></i> GraphQL Apollo Server</a></li>
+                        <li><a href="https://bun.sh/" target="_blank"><i class="fas fa-tools"></i> Bun Runtime</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Databases -->
+            <div class="resource-card" data-category="Databases">
+                <div class="card-header">
+                    <h3>Databases</h3>
+                    <p>SQL, NoSQL, advanced design, and caching</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Documentation</span>
+                    <ul class="resource-list">
+                        <li><a href="https://www.postgresql.org/docs/" target="_blank"><i class="fas fa-book"></i> PostgreSQL Docs</a></li>
+                        <li><a href="https://redis.io/docs/" target="_blank"><i class="fas fa-book"></i> Redis Docs</a></li>
+                        <li><a href="https://www.mongodb.com/docs/" target="_blank"><i class="fas fa-book"></i> MongoDB Docs</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Courses</span>
+                    <ul class="resource-list">
+                        <li><a href="https://university.mongodb.com/" target="_blank"><i class="fas fa-external-link-alt"></i> MongoDB University</a></li>
+                        <li><a href="https://sqlbolt.com/" target="_blank"><i class="fas fa-external-link-alt"></i> SQLBolt</a></li>
+                        <li><a href="https://www.khanacademy.org/computing/computer-programming/sql" target="_blank"><i class="fas fa-external-link-alt"></i> Khan Academy SQL</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/dahlia/awesome-sqlalchemy" target="_blank"><i class="fab fa-github"></i> Awesome SQLAlchemy</a></li>
+                        <li><a href="https://github.com/mramra3004/awesome-redis" target="_blank"><i class="fab fa-github"></i> Awesome Redis</a></li>
+                        <li><a href="https://github.com/numetriclabz/awesome-db" target="_blank"><i class="fab fa-github"></i> Awesome Database Tools</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools</span>
+                    <ul class="resource-list">
+                        <li><a href="https://dbeaver.io/" target="_blank"><i class="fas fa-tools"></i> DBeaver (Linux-compatible)</a></li>
+                        <li><a href="https://redis.com/redis-enterprise/redis-insight/" target="_blank"><i class="fas fa-tools"></i> Redis Insight</a></li>
+                        <li><a href="https://www.mongodb.com/products/compass" target="_blank"><i class="fas fa-tools"></i> MongoDB Compass</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- System Design -->
+            <div class="resource-card" data-category="System Design">
+                <div class="card-header">
+                    <h3>System Design</h3>
+                    <p>Scalable architectures, microservices, and event-driven systems</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Courses</span>
+                    <ul class="resource-list">
+                        <li><a href="https://aws.amazon.com/getting-started/hands-on/well-architected-webapp/" target="_blank"><i class="fas fa-external-link-alt"></i> AWS Well-Architected Framework</a></li>
+                        <li><a href="https://cloud.google.com/architecture/framework" target="_blank"><i class="fas fa-external-link-alt"></i> Google Cloud Architecture Framework</a></li>
+                        <li><a href="https://www.coursera.org/learn/software-architecture" target="_blank"><i class="fas fa-external-link-alt"></i> Software Design and Architecture</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/donnemartin/system-design-primer" target="_blank"><i class="fab fa-github"></i> System Design Primer</a></li>
+                        <li><a href="https://github.com/madd86/awesome-system-design" target="_blank"><i class="fab fa-github"></i> Awesome System Design</a></li>
+                        <li><a href="https://github.com/binhnguyennus/awesome-scalability" target="_blank"><i class="fab fa-github"></i> Awesome Scalability</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Books</span>
+                    <ul class="resource-list">
+                        <li><a href="https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321" target="_blank"><i class="fas fa-book"></i> Designing Data-Intensive Applications</a></li>
+                        <li><a href="https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF" target="_blank"><i class="fas fa-book"></i> System Design Interview</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Interactive Platforms</span>
+                    <ul class="resource-list">
+                        <li><a href="https://leetcode.com/discuss/interview-question/system-design/" target="_blank"><i class="fas fa-laptop-code"></i> LeetCode System Design Questions</a></li>
+                        <li><a href="https://www.educative.io/courses/grokking-the-system-design-interview" target="_blank"><i class="fas fa-laptop-code"></i> Grokking System Design</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Security -->
+            <div class="resource-card" data-category="Security">
+                <div class="card-header">
+                    <h3>Security</h3>
+                    <p>OWASP Top 10, API security, encryption, and auth flows</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Documentation</span>
+                    <ul class="resource-list">
+                        <li><a href="https://owasp.org/www-project-top-ten/" target="_blank"><i class="fas fa-book"></i> OWASP Top 10</a></li>
+                        <li><a href="https://jwt.io/introduction" target="_blank"><i class="fas fa-book"></i> JWT.io</a></li>
+                        <li><a href="https://oauth.net/2/" target="_blank"><i class="fas fa-book"></i> OAuth 2.0 Documentation</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Courses</span>
+                    <ul class="resource-list">
+                        <li><a href="https://www.edx.org/course/cybersecurity-fundamentals" target="_blank"><i class="fas fa-external-link-alt"></i> Cybersecurity Fundamentals (edX)</a></li>
+                        <li><a href="https://www.coursera.org/learn/google-it-support" target="_blank"><i class="fas fa-external-link-alt"></i> Google IT Support Professional</a></li>
+                        <li><a href="https://www.cybrary.it/catalog/cybersecurity/" target="_blank"><i class="fas fa-external-link-alt"></i> Cybrary Cybersecurity Courses</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/paralax/awesome-honeypots" target="_blank"><i class="fab fa-github"></i> Awesome Honeypots</a></li>
+                        <li><a href="https://github.com/OWASP/CheatSheetSeries" target="_blank"><i class="fab fa-github"></i> OWASP Cheat Sheet Series</a></li>
+                        <li><a href="https://github.com/sbilly/awesome-security" target="_blank"><i class="fab fa-github"></i> Awesome Security</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools</span>
+                    <ul class="resource-list">
+                        <li><a href="https://portswigger.net/burp/communitydownload" target="_blank"><i class="fas fa-tools"></i> Burp Suite Community Edition</a></li>
+                        <li><a href="https://owasp.org/www-project-zap/" target="_blank"><i class="fas fa-tools"></i> OWASP ZAP</a></li>
+                        <li><a href="https://www.nmap.org/" target="_blank"><i class="fas fa-tools"></i> Nmap</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- DevOps & Cloud -->
+            <div class="resource-card" data-category="DevOps">
+                <div class="card-header">
+                    <h3>DevOps & Cloud</h3>
+                    <p>CI/CD, Docker, Kubernetes, and cloud platforms</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Documentation</span>
+                    <ul class="resource-list">
+                        <li><a href="https://kubernetes.io/docs/home/" target="_blank"><i class="fas fa-book"></i> Kubernetes Docs</a></li>
+                        <li><a href="https://docs.docker.com/" target="_blank"><i class="fas fa-book"></i> Docker Docs</a></li>
+                        <li><a href="https://www.terraform.io/docs" target="_blank"><i class="fas fa-book"></i> Terraform Docs</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Courses</span>
+                    <ul class="resource-list">
+                        <li><a href="https://aws.amazon.com/getting-started/" target="_blank"><i class="fas fa-external-link-alt"></i> AWS Free Tier & Training</a></li>
+                        <li><a href="https://cloud.google.com/free" target="_blank"><i class="fas fa-external-link-alt"></i> Google Cloud Free Tier</a></li>
+                        <li><a href="https://learn.hashicorp.com/terraform" target="_blank"><i class="fas fa-external-link-alt"></i> HashiCorp Learn</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/bregman-arie/devops-exercises" target="_blank"><i class="fab fa-github"></i> DevOps Exercises</a></li>
+                        <li><a href="https://github.com/cncf/landscape" target="_blank"><i class="fab fa-github"></i> CNCF Landscape</a></li>
+                        <li><a href="https://github.com/awesome-devops/awesome-devops" target="_blank"><i class="fab fa-github"></i> Awesome DevOps</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools</span>
+                    <ul class="resource-list">
+                        <li><a href="https://podman.io/" target="_blank"><i class="fas fa-tools"></i> Podman (Docker alternative)</a></li>
+                        <li><a href="https://prometheus.io/" target="_blank"><i class="fas fa-tools"></i> Prometheus</a></li>
+                        <li><a href="https://grafana.com/oss/grafana/" target="_blank"><i class="fas fa-tools"></i> Grafana</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Linux & Productivity -->
+            <div class="resource-card" data-category="Linux">
+                <div class="card-header">
+                    <h3>Linux & Productivity</h3>
+                    <p>Fedora/KDE Plasma, shell scripting, and CLI workflows</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Documentation</span>
+                    <ul class="resource-list">
+                        <li><a href="https://docs.fedoraproject.org/" target="_blank"><i class="fas fa-book"></i> Fedora Docs <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://userbase.kde.org/" target="_blank"><i class="fas fa-book"></i> KDE Plasma Docs <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://linuxjourney.com/" target="_blank"><i class="fas fa-book"></i> Linux Journey</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Courses</span>
+                    <ul class="resource-list">
+                        <li><a href="https://training.linuxfoundation.org/resources/free-courses/" target="_blank"><i class="fas fa-external-link-alt"></i> Linux Foundation Free Courses <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://www.bash.academy/" target="_blank"><i class="fas fa-external-link-alt"></i> Bash Academy <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://www.udemy.com/course/linux-mastery/" target="_blank"><i class="fas fa-external-link-alt"></i> Linux Mastery (Udemy Free)</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/LewisVo/Awesome-Linux-Software" target="_blank"><i class="fab fa-github"></i> Awesome Linux Software <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://github.com/mathiasbynens/dotfiles" target="_blank"><i class="fab fa-github"></i> Mathias Bynens Dotfiles <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://github.com/awesome-lists/awesome-bash" target="_blank"><i class="fab fa-github"></i> Awesome Bash <span class="linux-badge">Linux</span></a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools</span>
+                    <ul class="resource-list">
+                        <li><a href="https://htop.dev/" target="_blank"><i class="fas fa-tools"></i> htop <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://github.com/tmux/tmux" target="_blank"><i class="fas fa-tools"></i> tmux <span class="linux-badge">Linux</span></a></li>
+                        <li><a href="https://github.com/sharkdp/bat" target="_blank"><i class="fas fa-tools"></i> bat (cat clone) <span class="linux-badge">Linux</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Advanced Extras -->
+            <div class="resource-card" data-category="Advanced Extras">
+                <div class="card-header">
+                    <h3>Advanced Extras</h3>
+                    <p>Distributed systems, functional programming, and observability</p>
+                </div>
+                <div class="card-body">
+                    <span class="resource-type">Courses</span>
+                    <ul class="resource-list">
+                        <li><a href="https://ocw.mit.edu/courses/6-824-distributed-systems-spring-2020/" target="_blank"><i class="fas fa-external-link-alt"></i> Distributed Systems (MIT OpenCourseWare)</a></li>
+                        <li><a href="https://www.coursera.org/learn/scala-functional-programming" target="_blank"><i class="fas fa-external-link-alt"></i> Functional Programming in Scala</a></li>
+                        <li><a href="https://www.manning.com/books/designing-data-intensive-applications" target="_blank"><i class="fas fa-external-link-alt"></i> Designing Data-Intensive Applications</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">GitHub Repositories</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/theanalyst/awesome-distributed-systems" target="_blank"><i class="fab fa-github"></i> Awesome Distributed Systems</a></li>
+                        <li><a href="https://github.com/lucasviola/awesome-functional-programming" target="_blank"><i class="fab fa-github"></i> Awesome Functional Programming</a></li>
+                        <li><a href="https://github.com/dastergon/awesome-sre" target="_blank"><i class="fab fa-github"></i> Awesome Site Reliability Engineering</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Books</span>
+                    <ul class="resource-list">
+                        <li><a href="https://github.com/getify/You-Dont-Know-JS" target="_blank"><i class="fas fa-book"></i> You Don't Know JS</a></li>
+                        <li><a href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/" target="_blank"><i class="fas fa-book"></i> Designing Data-Intensive Applications</a></li>
+                        <li><a href="https://github.com/codecrafters-io/build-your-own-x" target="_blank"><i class="fas fa-book"></i> Build Your Own X</a></li>
+                    </ul>
+                    
+                    <span class="resource-type">Tools</span>
+                    <ul class="resource-list">
+                        <li><a href="https://prometheus.io/" target="_blank"><i class="fas fa-tools"></i> Prometheus</a></li>
+                        <li><a href="https://grafana.com/" target="_blank"><i class="fas fa-tools"></i> Grafana</a></li>
+                        <li><a href="https://opentelemetry.io/" target="_blank"><i class="fas fa-tools"></i> OpenTelemetry</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Curated with ❤️ for the developer community</p>
+            <p>All resources are freely accessible. Some may offer optional paid certificates.</p>
+            <p>This page uses responsive design principles to ensure optimal viewing on all devices :cite[2]:cite[4]:cite[8].</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple filtering functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const resourceCards = document.querySelectorAll('.resource-card');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.textContent;
+                    
+                    // Update active button
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Show/hide cards based on category
+                    resourceCards.forEach(card => {
+                        if (category === 'All' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Simple search functionality
+            const searchInput = document.querySelector('.search-box input');
+            const searchButton = document.querySelector('.search-box button');
+            
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                resourceCards.forEach(card => {
+                    const cardContent = card.textContent.toLowerCase();
+                    if (cardContent.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Reset category filter
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.category-btn:first-child').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

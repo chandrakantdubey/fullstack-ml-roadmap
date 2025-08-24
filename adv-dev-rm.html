@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Developer Roadmap</title>
+
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" xintegrity="sha384-sN/2OKsEuI0TLs4oL29M4i23iWCV0A2UuSNV92OKpD2S4Ol22L+2tVWHBUA/sYv0" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" xintegrity="sha384-hIoBPJpTUs74ddlMiz2XTtbwYbgOP+OrByOKGU6Is9TMLaaWytB3Gg8UPMAwsZ8d" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" xintegrity="sha384-43gviWU0YVjaDtb/GpPCpUGTNYsLtetv44M1kSwH4CGs+8UaJbTCMVnE23yKtcGb" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --primary-color: #bb86fc;
+            --secondary-color: #03dac6;
+            --text-color: #e0e0e0;
+            --text-muted-color: #a0a0a0;
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-text {
+            text-align: center;
+            color: var(--text-muted-color);
+            max-width: 700px;
+            margin: 0 auto 3rem auto;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-top: 2rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--secondary-color);
+            padding-left: 0.75rem;
+        }
+
+        .track-section {
+            margin-bottom: 4rem;
+        }
+
+        .module {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        strong {
+            color: var(--primary-color);
+        }
+
+        a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--secondary-color);
+            transition: color 0.2s ease, border-bottom-color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        code {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+            font-size: 0.9em;
+        }
+
+        .pairs-with {
+            font-style: italic;
+            color: var(--text-muted-color);
+            border-left: 2px solid var(--border-color);
+            padding-left: 1rem;
+            margin-top: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Advanced Developer Roadmap 🚀</h1>
+        <p class="intro-text">
+            A modular, "choose-your-own-adventure" guide to elevate you from an experienced engineer to an advanced, well-rounded developer. Mix and match modules to fit your goals.
+        </p>
+
+        <!-- Track 1: Machine Learning -->
+        <section class="track-section">
+            <h2>Track 1: Machine Learning (Ground-Up to Advanced)</h2>
+            <article class="module">
+                <h3>Module 1.1: The Mathematical Foundation 🧠</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Linear Algebra</strong>: Vectors, matrices, dot products, determinants, eigenvalues, and eigenvectors. Understand them as tools for manipulating data.</li>
+                    <li><strong>Calculus</strong>: Derivatives, gradients (for optimization like in Gradient Descent), chain rule (the heart of backpropagation).</li>
+                    <li><strong>Probability & Statistics</strong>: Bayes' theorem, probability distributions (Gaussian, Poisson), variance, standard deviation, p-values, hypothesis testing.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Implement matrix multiplication in pure Python.</li>
+                    <li>Manually calculate the gradient of a simple function like $f(x, y) = x^2y + y^3$.</li>
+                    <li>Write a script to calculate mean, median, and standard deviation for a dataset.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Course</strong>: Khan Academy's courses on <a href="https://www.khanacademy.org/math/linear-algebra" target="_blank" rel="noopener noreferrer">Linear Algebra</a>, <a href="https://www.khanacademy.org/math/multivariable-calculus" target="_blank" rel="noopener noreferrer">Multivariable Calculus</a>, and <a href="https://www.khanacademy.org/math/statistics-probability" target="_blank" rel="noopener noreferrer">Statistics & Probability</a>.</li>
+                    <li><strong>Visualizations</strong>: <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank" rel="noopener noreferrer">3Blue1Brown's Essence of Linear Algebra</a> and <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t57w" target="_blank" rel="noopener noreferrer">Calculus</a> series.</li>
+                </ul>
+            </article>
+
+            <article class="module">
+                <h3>Module 1.2: Core ML Algorithms & Frameworks ⚙️</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Supervised Learning</strong>: Linear/Logistic Regression, K-Nearest Neighbors (KNN), Support Vector Machines (SVM), Decision Trees, Random Forests. Understand the bias-variance tradeoff.</li>
+                    <li><strong>Unsupervised Learning</strong>: K-Means Clustering, Principal Component Analysis (PCA).</li>
+                    <li><strong>Core Libraries</strong>: <code>NumPy</code> for numerical operations, <code>pandas</code> for data manipulation, <code>Matplotlib/Seaborn</code> for visualization, and <code>scikit-learn</code> for classical ML models.</li>
+                </ul>
+                <h4>Practice/Mini-Project</h4>
+                <ul>
+                    <li>Use scikit-learn to build a model that predicts house prices (Regression) or classifies iris species (Classification). Perform exploratory data analysis (EDA) with pandas and Matplotlib.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Course</strong>: Andrew Ng's <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank" rel="noopener noreferrer">Machine Learning Specialization</a> on Coursera (audit for free).</li>
+                    <li><strong>Book/Repo</strong>: <a href="https://github.com/ageron/handson-ml3" target="_blank" rel="noopener noreferrer">Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow</a> (Code is free on GitHub).</li>
+                </ul>
+            </article>
+
+            <article class="module">
+                <h3>Module 1.3: Deep Learning & Modern Frameworks 🔥</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Neural Networks</strong>: Neurons, layers, activation functions (ReLU, Sigmoid), backpropagation.</li>
+                    <li><strong>Deep Learning Architectures</strong>: Convolutional Neural Networks (CNNs) for images, Recurrent Neural Networks (RNNs) / LSTMs for sequences, and Transformers.</li>
+                    <li><strong>Frameworks</strong>: Choose one: <strong>PyTorch</strong> (pythonic, great for research) or <strong>TensorFlow</strong> (strong production ecosystem).</li>
+                </ul>
+                <h4>Practice/Mini-Project</h4>
+                <ul>
+                    <li>Build a CNN to classify digits from the MNIST dataset.</li>
+                    <li>Train a simple RNN to generate text character-by-character based on a sample text.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Course</strong>: <a href="https://course.fast.ai/" target="_blank" rel="noopener noreferrer">fast.ai's Practical Deep Learning for Coders</a>.</li>
+                    <li><strong>Tutorials</strong>: The official <a href="https://pytorch.org/tutorials/" target="_blank" rel="noopener noreferrer">PyTorch Tutorials</a> and <a href="https://www.tensorflow.org/tutorials" target="_blank" rel="noopener noreferrer">TensorFlow Tutorials</a>.</li>
+                </ul>
+            </article>
+
+            <article class="module">
+                <h3>Module 1.4: MLOps - Productionizing ML 🏭</h3>
+                 <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Model Deployment</strong>: Serving a trained model via a REST API (e.g., using FastAPI).</li>
+                    <li><strong>Containerization</strong>: Packaging your model and its dependencies with Docker.</li>
+                    <li><strong>CI/CD for ML</strong>: Automating training and deployment pipelines (e.g., with GitHub Actions).</li>
+                    <li><strong>Monitoring</strong>: Tracking model performance, data drift, and concept drift in production.</li>
+                </ul>
+                <h4>Portfolio Project</h4>
+                <ul>
+                    <li>Take an image classification model, build a FastAPI endpoint for it, containerize with Docker, and write a GitHub Actions workflow to automate testing and building.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Course</strong>: <a href="https://madewithml.com/" target="_blank" rel="noopener noreferrer">Made With ML's MLOps course</a>.</li>
+                    <li><strong>GitHub Repo</strong>: <a href="https://github.com/visenger/awesome-mlops" target="_blank" rel="noopener noreferrer">Awesome MLOps</a>.</li>
+                </ul>
+                <p class="pairs-with">Pairs well with: DevOps & Cloud and Backend tracks.</p>
+            </article>
+        </section>
+
+        <!-- Track 2: Data Structures & Algorithms -->
+        <section class="track-section">
+            <h2>Track 2: Data Structures & Algorithms (Intermediate → Advanced)</h2>
+            <article class="module">
+                <h3>Module 2.1: Advanced Problem-Solving Patterns 🧩</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Graphs</strong>: Master traversals (BFS, DFS), shortest path algorithms (Dijkstra's, A*), and topological sort.</li>
+                    <li><strong>Dynamic Programming</strong>: Understand patterns like Knapsack, Longest Common Subsequence, and when to use memoization vs. tabulation.</li>
+                    <li><strong>Advanced Patterns</strong>: Two Pointers, Sliding Window, Tries, Union-Find, Segment Trees.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Solve 5-10 medium/hard LeetCode problems for each pattern.</li>
+                    <li>Participate in a few rounds on platforms like Codeforces or AtCoder.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Problem Sets</strong>: <a href="https://neetcode.io/practice" target="_blank" rel="noopener noreferrer">NeetCode 150</a> (structured LeetCode practice).</li>
+                    <li><strong>Tutorials</strong>: <a href="https://cp-algorithms.com/" target="_blank" rel="noopener noreferrer">cp-algorithms.com</a> (an incredible resource for competitive programming algorithms).</li>
+                </ul>
+            </article>
+
+            <article class="module">
+                <h3>Module 2.2: System-Level Applications 🖥️</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Concurrency</strong>: Understand how data structures behave in multi-threaded environments (e.g., concurrent hash maps).</li>
+                    <li><strong>Memory Management</strong>: Learn about memory locality, cache-friendly data structures, and how your choice of data structure impacts performance.</li>
+                    <li><strong>Probabilistic Data Structures</strong>: Bloom filters, HyperLogLog, and their use cases in large-scale systems.</li>
+                </ul>
+                <h4>Practice/Mini-Project</h4>
+                <ul>
+                    <li>Build a Bloom filter from scratch to check if a username is already taken without hitting the database every time.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Blog Posts</strong>: Read engineering blogs from companies like Google, Meta, and Netflix on how they use data structures to solve scale problems.</li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Track 3: Frontend -->
+        <section class="track-section">
+            <h2>Track 3: Frontend (Intermediate → Advanced - React Ecosystem)</h2>
+            <article class="module">
+                <h3>Module 3.1: React Internals & Performance ⚡</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Reconciliation</strong>: How the virtual DOM diffing algorithm works.</li>
+                    <li><strong>Rendering</strong>: Understand the render phase vs. commit phase.</li>
+                    <li><strong>Hooks Deep Dive</strong>: Master <code>useMemo</code>, <code>useCallback</code>, <code>useTransition</code>.</li>
+                    <li><strong>Performance Profiling</strong>: Using the React DevTools Profiler. Code splitting with <code>React.lazy</code>.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Take an existing project and use the Profiler to find and fix an unnecessary re-render.</li>
+                    <li>Implement code splitting for different routes in a sample application.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Documentation</strong>: The new <a href="https://react.dev/" target="_blank" rel="noopener noreferrer">React Docs</a> are exceptional.</li>
+                    <li><strong>Blog</strong>: <a href="https://kentcdodds.com/blog" target="_blank" rel="noopener noreferrer">Kent C. Dodds' Blog</a> has fantastic articles on advanced React patterns.</li>
+                </ul>
+            </article>
+
+            <article class="module">
+                <h3>Module 3.2: Modern App Architecture 🏗️</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>State Management</strong>: Master a global state manager like <strong>Zustand</strong> (simple) or <strong>Redux Toolkit</strong> (robust).</li>
+                    <li><strong>Data Fetching (Server Cache)</strong>: Master <strong>React Query</strong> or <strong>SWR</strong>.</li>
+                    <li><strong>Forms & Validation</strong>: Use <strong>React Hook Form</strong> with a schema validation library like <strong>Zod</strong>.</li>
+                    <li><strong>SSR/SSG</strong>: Understand the trade-offs and implementation using a framework like <strong>Next.js</strong>.</li>
+                </ul>
+                <h4>Portfolio Project</h4>
+                <ul>
+                    <li>Build a feature-rich application like a Reddit or Trello clone using Next.js, Zustand, React Query, React Hook Form + Zod, Framer Motion for animations, and Stripe for payments.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Courses</strong>: <a href="https://nextjs.org/learn/foundations/about-nextjs" target="_blank" rel="noopener noreferrer">Next.js Foundations Course</a>.</li>
+                    <li><strong>Documentation</strong>: Official docs for <a href="https://github.com/pmndrs/zustand" target="_blank" rel="noopener noreferrer">Zustand</a>, <a href="https://redux-toolkit.js.org/" target="_blank" rel="noopener noreferrer">Redux Toolkit</a>, <a href="https://tanstack.com/query/latest" target="_blank" rel="noopener noreferrer">React Query</a>, and <a href="https://react-hook-form.com/" target="_blank" rel="noopener noreferrer">React Hook Form</a>.</li>
+                </ul>
+                <p class="pairs-with">Pairs well with: Backend and Databases tracks.</p>
+            </article>
+        </section>
+
+        <!-- Track 4: Backend -->
+        <section class="track-section">
+            <h2>Track 4: Backend (Intermediate → Advanced)</h2>
+            <article class="module">
+                <h3>Module 4.1: Expert API Design & Security 🛡️</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>API Paradigms</strong>: Deeply understand <strong>REST</strong> (idempotency, status codes), <strong>GraphQL</strong> (solving over/under-fetching), and <strong>tRPC</strong> (end-to-end typesafety).</li>
+                    <li><strong>Security</strong>: Master <strong>JWT</strong> for stateless authentication, implement <strong>OAuth2</strong> flows, handle <strong>CORS</strong>, and implement rate limiting.</li>
+                    <li><strong>Frameworks</strong>: Master <strong>FastAPI</strong> (Python) or the <strong>Node.js/Bun</strong> ecosystem (<strong>Express/Fastify</strong>).</li>
+                </ul>
+                <h4>Practice/Mini-Project</h4>
+                <ul>
+                    <li>Build the same simple CRUD API in both FastAPI and Express to compare.</li>
+                    <li>Implement an OAuth2 flow from scratch for a personal project.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Documentation</strong>: <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">FastAPI Docs</a> are some of the best ever written.</li>
+                    <li><strong>Guides</strong>: <a href="https://owasp.org/www-project-api-security/" target="_blank" rel="noopener noreferrer">OWASP API Security Top 10</a>.</li>
+                </ul>
+            </article>
+            <article class="module">
+                <h3>Module 4.2: Performance & Scalability 📈</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Asynchronous Patterns</strong>: Master <code>async/await</code> in JS/TS and <code>asyncio</code> in Python. Understand the event loop.</li>
+                    <li><strong>Performance Tuning</strong>: Profiling code to find bottlenecks, optimizing database queries (N+1 problem), and using connection pooling.</li>
+                    <li><strong>Testing</strong>: Write unit, integration, and end-to-end tests for your API. Use tools like <strong>Pytest</strong> or <strong>Jest/Supertest</strong>.</li>
+                    <li><strong>Distributed Concerns</strong>: Stateless vs. stateful services, service discovery, and health checks.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Take a slow API endpoint and use a profiler to identify and fix the bottleneck.</li>
+                    <li>Refactor a callback-based Node.js codebase to use <code>async/await</code>.</li>
+                </ul>
+                <p class="pairs-with">Pairs well with: System Design and Databases.</p>
+            </article>
+        </section>
+
+        <!-- Track 5: Databases -->
+        <section class="track-section">
+            <h2>Track 5: Databases (Intermediate → Advanced)</h2>
+            <article class="module">
+                <h3>Module 5.1: Advanced Design & Optimization 📊</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Data Modeling</strong>: Learn about denormalization strategies. Understand when to use <strong>Relational (PostgreSQL)</strong> vs. <strong>NoSQL (MongoDB, DynamoDB)</strong>.</li>
+                    <li><strong>Indexing</strong>: Master different types of indexes. Use <code>EXPLAIN ANALYZE</code> (in SQL) to understand and optimize query performance.</li>
+                    <li><strong>Transactions & Concurrency</strong>: Deeply understand ACID properties, isolation levels, and how to handle deadlocks.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Design a schema for a complex system like a social media feed. Justify your choice of SQL vs. NoSQL.</li>
+                    <li>Take a slow query, run <code>EXPLAIN ANALYZE</code>, and add an index to speed it up.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Interactive Tutorial</strong>: <a href="https://pgexercises.com/" target="_blank" rel="noopener noreferrer">Postgres Exercises</a>.</li>
+                    <li><strong>Resource</strong>: <a href="https://use-the-index-luke.com/" target="_blank" rel="noopener noreferrer">use-the-index-luke.com</a> is a classic guide to database indexing.</li>
+                </ul>
+            </article>
+            <article class="module">
+                <h3>Module 5.2: Scalability & Resilience 🌐</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Replication</strong>: Understand leader-follower replication for read scaling and high availability.</li>
+                    <li><strong>Sharding</strong>: Learn strategies for partitioning data across multiple servers (horizontal scaling).</li>
+                    <li><strong>Caching</strong>: Implement caching strategies (cache-aside, write-through) using <strong>Redis</strong>.</li>
+                    <li><strong>Migrations</strong>: Manage schema changes in a production environment without downtime using tools like <strong>Alembic</strong> or <strong>Prisma Migrate</strong>.</li>
+                </ul>
+                <h4>Practice/Mini-Project</h4>
+                <ul>
+                    <li>Set up a simple PostgreSQL leader-follower replication using Docker.</li>
+                    <li>Add a Redis cache to a backend project to cache frequently accessed data.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Courses</strong>: <a href="https://university.redis.com/" target="_blank" rel="noopener noreferrer">Redis University</a> offers free courses on Redis.</li>
+                </ul>
+                <p class="pairs-with">Pairs well with: System Design.</p>
+            </article>
+        </section>
+
+        <!-- Track 6: System Design -->
+        <section class="track-section">
+            <h2>Track 6: System Design (Intermediate → Advanced)</h2>
+            <article class="module">
+                <h3>Architectural Concepts & Patterns 🏛️</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Fundamentals</strong>: Vertical vs. Horizontal Scaling, Load Balancing, CAP Theorem trade-offs.</li>
+                    <li><strong>Architectural Patterns</strong>: Monolith vs. Microservices vs. Serverless. Event-Driven Architecture.</li>
+                    <li><strong>Communication</strong>: Synchronous (REST, gRPC) vs. Asynchronous communication using Message Queues (<strong>RabbitMQ</strong>, <strong>Kafka</strong>).</li>
+                    <li><strong>Case Studies</strong>: Deconstruct common systems: a URL shortener, a social media feed, a ride-sharing app.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>On a whiteboard or with a tool like Excalidraw, design the high-level architecture for a system like "Pastebin" or "Twitter".</li>
+                </ul>
+                <h4>Portfolio Project</h4>
+                <ul>
+                    <li>Take your full-stack project and break one part of it out into a separate microservice that communicates via a message queue.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>GitHub Repo</strong>: The bible: <a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener noreferrer">System Design Primer</a>.</li>
+                    <li><strong>YouTube</strong>: <a href="https://www.youtube.com/@ByteByteGo" target="_blank" rel="noopener noreferrer">ByteByteGo</a> and <a href="https://www.youtube.com/@gauravsen" target="_blank" rel="noopener noreferrer">Gaurav Sen</a> provide excellent explanations.</li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Track 7: Security -->
+        <section class="track-section">
+            <h2>Track 7: Security (Intermediate → Advanced)</h2>
+            <article class="module">
+                <h3>Defensive Development & Best Practices 🔐</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Web Security</strong>: Master the <strong>OWASP Top 10</strong> (XSS, SQL Injection, CSRF, etc.) and their mitigation techniques.</li>
+                    <li><strong>API Security</strong>: Secure endpoints with proper authentication, authorization (role-based access control), and input validation.</li>
+                    <li><strong>Secrets Management</strong>: Use environment variables locally and a service like <strong>HashiCorp Vault</strong> or a cloud provider's secret manager in production.</li>
+                    <li><strong>Encryption</strong>: Understand symmetric vs. asymmetric encryption, hashing (use bcrypt for passwords), and TLS/SSL.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Go through the labs on PortSwigger. Try to find and exploit a vulnerability.</li>
+                    <li>Review one of your old projects and identify potential security flaws.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Interactive Labs</strong>: <a href="https://portswigger.net/web-security" target="_blank" rel="noopener noreferrer">PortSwigger Web Security Academy</a> is an outstanding, free, hands-on platform.</li>
+                    <li><strong>Guide</strong>: The <a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener noreferrer">OWASP Top 10</a> website itself.</li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Track 8: DevOps & Cloud -->
+        <section class="track-section">
+            <h2>Track 8: DevOps & Cloud (Intermediate → Advanced)</h2>
+            <article class="module">
+                <h3>Automation, Orchestration & Infrastructure as Code ☁️</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>CI/CD</strong>: Build complex pipelines with <strong>GitHub Actions</strong>. Implement stages for linting, testing, building artifacts, and deploying.</li>
+                    <li><strong>Containerization</strong>: Master multi-stage builds for smaller Docker images and <strong>Docker Compose</strong> for local development.</li>
+                    <li><strong>Orchestration</strong>: Understand the fundamentals of <strong>Kubernetes</strong> (Pods, Services, Deployments, Ingress).</li>
+                    <li><strong>Infrastructure as Code (IaC)</strong>: Use <strong>Terraform</strong> to define and manage your cloud resources declaratively.</li>
+                    <li><strong>Cloud Services</strong>: For your chosen cloud (<strong>AWS/GCP/Azure</strong>), master core services: Compute, Storage, Databases, and Networking.</li>
+                </ul>
+                <h4>Practice/Portfolio Project</h4>
+                <ul>
+                    <li>Use Terraform to provision the cloud infrastructure needed for your portfolio project.</li>
+                    <li>Create a GitHub Actions pipeline that automatically deploys your containerized backend to that infrastructure on merge.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Free Certifications</strong>: Check out <a href="https://explore.skillbuilder.aws/" target="_blank" rel="noopener noreferrer">AWS Skill Builder</a>, <a href="https://learn.microsoft.com/" target="_blank" rel="noopener noreferrer">Microsoft Learn</a>, and <a href="https://www.cloudskillsboost.google/" target="_blank" rel="noopener noreferrer">Google Cloud Skills Boost</a> for free learning paths.</li>
+                    <li><strong>Tutorials</strong>: <a href="https://kodekloud.com/" target="_blank" rel="noopener noreferrer">KodeKloud</a> has many free hands-on labs for Docker and Kubernetes.</li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Track 9: Linux & Productivity -->
+        <section class="track-section">
+            <h2>Track 9: Linux & Productivity (Advanced User Level)</h2>
+            <article class="module">
+                <h3>Mastering the Command Line 🐧</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Shell Scripting</strong>: Write robust <code>bash</code> or <code>zsh</code> scripts for automating repetitive tasks.</li>
+                    <li><strong>Power Tools</strong>: Master <code>grep</code>, <code>awk</code>, <code>sed</code>, <code>jq</code> (for JSON), and <code>xargs</code>.</li>
+                    <li><strong>System Monitoring</strong>: Use <code>htop</code>, <code>nethogs</code>, <code>iostat</code>, and <code>strace</code> to debug and understand your system.</li>
+                    <li><strong>Workflow Optimization</strong>: Manage your "dotfiles" with Git. Customize your shell and use a terminal multiplexer like <strong>tmux</strong>.</li>
+                </ul>
+                <h4>Practice Tasks</h4>
+                <ul>
+                    <li>Write a script to parse a log file and extract all error messages from the last hour.</li>
+                    <li>Create a Git repository for your dotfiles.</li>
+                    <li>Set up a tmux session for your primary project with pre-defined windows and panes.</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Guide</strong>: <a href="https://github.com/jlevy/the-art-of-command-line" target="_blank" rel="noopener noreferrer">The Art of Command Line</a>.</li>
+                    <li><strong>Interactive Tutorial</strong>: <a href="https://linuxjourney.com/" target="_blank" rel="noopener noreferrer">linuxjourney.com</a>.</li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Track 10: Extra Advanced Areas -->
+        <section class="track-section">
+            <h2>Track 10: Extra Advanced Areas (Senior Level)</h2>
+            <article class="module">
+                <h3>Cross-Cutting Concerns & Engineering Excellence ✨</h3>
+                <h4>Key Concepts</h4>
+                <ul>
+                    <li><strong>Observability</strong>: Go beyond logging. Learn to use <strong>Prometheus</strong> for metrics and <strong>Grafana</strong> for visualization.</li>
+                    <li><strong>Distributed Systems Theory</strong>: Read about consensus algorithms (Paxos, Raft), failure detection, and distributed transactions.</li>
+                    <li><strong>Design Patterns & Clean Architecture</strong>: Study concepts from books like "Clean Architecture" and "Designing Data-Intensive Applications".</li>
+                    <li><strong>Advanced Git</strong>: Master interactive rebase (<code>git rebase -i</code>), cherry-picking, and bisecting.</li>
+                    <li><strong>Open-Source Contribution</strong>: Find a library you use and contribute back. Start small: fix a typo in the documentation, add a test case, or tackle a "good first issue".</li>
+                </ul>
+                <h4>Free Resources</h4>
+                <ul>
+                    <li><strong>Book</strong>: <a href="https://dataintensive.net/" target="_blank" rel="noopener noreferrer">Designing Data-Intensive Applications</a> by Martin Kleppmann (the book is paid, but many free talks and articles by the author are available online).</li>
+                    <li><strong>Guide</strong>: <a href="https://www.firsttimersonly.com/" target="_blank" rel="noopener noreferrer">First Timers Only</a>, a guide for contributing to open source.</li>
+                </ul>
+            </article>
+        </section>
+
+    </div>
+
+    <script>
+        // This script will automatically render all LaTeX math in the document.
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError : false
+            });
+        });
+    </script>
+
+</body>
+</html>
